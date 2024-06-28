@@ -75,7 +75,7 @@ header h1 {
     color: #2c3e50;
     border-bottom: 3px solid #3498db;
     padding-bottom: 0.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 0rem;
 }
 
 .content {
@@ -113,7 +113,7 @@ header h1 {
 .me-image {
     flex-shrink: 0;
     width: 200px;
-    height: 200px;
+    height: 300px;
     overflow: hidden;
     border-radius: 5%;
 }
@@ -176,6 +176,108 @@ aside {
 
 .project-link:hover {
     background-color: #2980b9;
+}
+
+.project{
+    margin-bottom: 0rem;
+    margin-top: 0rem;
+    max-width: 75%;
+}
+
+.project-meta{
+    color:#7f8c8d;
+    margin-bottom: 0rem;
+    margin-top: 0rem;
+}
+
+.project h2{
+    margin-bottom: 0rem;
+}
+
+.semester h2{
+    margin-bottom: 0rem;
+}
+
+.semester ul li {
+    margin-top: 0rem;
+}
+
+.study-abroad {
+    color:#7f8c8d;
+    margin-bottom: 0rem;
+    margin-top: 0rem;
+}
+
+/* Resume specific styles */
+.resume-content {
+    line-height: 1.4;
+    width: 100%;
+}
+
+.resume-content .content section {
+    margin-bottom: 1rem;
+    width: 100%
+}
+
+.resume-content .entry {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.resume-content .entry-content {
+    flex: 1;
+    padding-right: 1rem;
+}
+
+.resume-content .entry-date {
+    flex-shrink: 0;
+    text-align: right;
+    min-width: 120px;
+}
+
+.resume-content .personal-info {
+    margin-bottom: 1rem;
+}
+
+.resume-content .personal-info h2 {
+    margin-bottom: 0.25rem;
+}
+
+.resume-content section h2 {
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
+    display: block;
+}
+
+.resume-content ul {
+    padding-left: 20px;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.resume-content h3, 
+.resume-content h4 {
+    margin-bottom: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+.resume-content p {
+    margin-top: 0;
+    margin-bottom: 0.25rem;
+}
+
+.resume-content li {
+    margin-bottom: 0.25rem;
+}
+
+.resume-content .education, 
+.resume-content .skills, 
+.resume-content .experiences, 
+.resume-content .projects {
+    margin-bottom: 0rem;
 }
 
 .copyright {
