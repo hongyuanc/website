@@ -203,7 +203,7 @@ aside {
 /* Resume specific styles */
 .resume-content {
     line-height: 1.4;
-    width: 100%;
+    max-width: 800px;
 }
 
 .resume-content .content section {
@@ -241,7 +241,6 @@ aside {
     padding-bottom: 0.25rem;
     margin-bottom: 0.5rem;
     width: 100%;
-    display: block;
 }
 
 .resume-content ul {
