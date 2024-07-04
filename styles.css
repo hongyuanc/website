@@ -295,6 +295,86 @@ aside {
     }
 }
 
+/* animations */
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.btn:hover, .project-link:hover {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes fadeInUp {
+    from { 
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+nav ul li {
+    opacity: 0;
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+nav ul li:nth-child(1) { animation-delay: 0.1s; }
+nav ul li:nth-child(2) { animation-delay: 0.2s; }
+nav ul li:nth-child(3) { animation-delay: 0.3s; }
+nav ul li:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-5px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+main h1,
+main h2,
+main h3,
+main h4,
+main p,
+main ul,
+.project,
+.project-meta
+.semester {
+    opacity: 0;
+    animation: slideInFromLeft 0.3s ease-out forwards;
+}
+
+main h1 { animation-delay: 0.05s; }
+main h2 { animation-delay: 0.1s; }
+main h3 { animation-delay: 0.15s; }
+main h4 { animation-delay: 0.2s; }
+main p { animation-delay: 0.25s; }
+main ul { animation-delay: 0.3s; }
+.project { animation-delay: 0.35s; }
+.semester { animation-delay: 0.4s; }
+
+/* Project section */
+.project { animation-delay: 0.1s; }
+.project h2 { animation-delay: 0.15s; }
+.project-meta { animation-delay: 0.2s; }
+.project p { animation-delay: 0.25s; }
+.project-link { animation-delay: 0.3s; }
+
+/* Coursework section */
+.semester { animation-delay: 0.1s; }
+.semester h2 { animation-delay: 0.15s; }
+.semester ul { animation-delay: 0.2s; }
+.semester ul li { animation-delay: 0.25s; }
+
+
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
