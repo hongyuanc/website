@@ -297,16 +297,6 @@ aside {
 
 /* animations */
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-
-.btn:hover, .project-link:hover {
-    animation: pulse 1s ease-in-out infinite;
-}
-
 @keyframes fadeInUp {
     from { 
         opacity: 0;
