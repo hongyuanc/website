@@ -183,12 +183,24 @@ h4 a:hover {
         font-size: 2.5rem;
     }
 
-    .nav-links {
+    nav {
+        padding: 1rem 0;
+        display: flex;
         flex-direction: column;
+        align-items: center;
+        position: relative;
     }
-
+    
+    .nav-links {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
     nav a {
-        margin: 0.5rem 0;
+        margin: 0.5rem;
+        font-size: 1rem;
+        position: relative;
     }
 
     #theme-switch {
