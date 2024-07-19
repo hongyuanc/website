@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Hong</title>
+    <link id="dark-theme-style" rel="stylesheet" href="dark.css">
+    <link id="light-theme-style" rel="stylesheet" href="light.css" disabled>
+    <link rel="preload" href="light.css" as="style">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="manifest" href="images/site.webmanifest">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="resume.html">Resume</a>
+                <a href="projects.html">Projects</a>
+                <a href="coursework.html">Coursework</a>
+            </div>
+            <div class="theme">
+                <button id="theme-switch" aria-label="Switch theme">
+                    <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </nav>
+
+        <main>
+            <header>
+                <h1>Hong Yuan Cao</h1>
+            </header>
+            <div class="content">
+                <section class="me">
+                    <div class="me-text">
+                        <div class="description">
+                            <p>Hey, I'm Hong! Welcome to my website!</p>
+                            <p>I'm a junior at Boston University, studying abroad in BU London this fall and completing a double major in <strong>economics and computer science</strong>. I'm expected to graduate in May 2026.</p>
+                            <p>I'm interested in <strong>game development</strong>, <strong>software engineering</strong>, and finance. I started exploring economics but was convinced by my computer science friends to try out what they do, which I found very intriguing. Hence, my work spans both fields, with projects and internships in areas such as game dev, LLMs, real estate, and loans.</p>
+                            <p>Currently, I'm working with <strong>Unity</strong> to build games, getting more familiar with the engine so I can create my own.</p>
+                        </div>
+                        
+                        <h4>
+                            <a href="mailto:hong.cao0824@gmail.com" target="_blank" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                            <a href="https://github.com/hongyuanc" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                            <a href="https://www.linkedin.com/in/hong-yuan-cao/" target="_blank" aria-label="Linkedin"><i class="fa-brands fa-linkedin-in"></i></a>
+                        </h4>
+                    </div>
+                    <!--<div class="me-image">
+                        <img src="assets/1.png" alt="ME">
+                    </div>-->
+                </section>
+            <div class="copyright">
+                <p>&copy; 2024 Hong Yuan Cao</p>
+            </div>
+
+        </main>
+    </div>
+    
+    <script src="theme-switch.js"></script>
+  
+</body>
+</html>
