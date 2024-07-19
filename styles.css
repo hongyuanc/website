@@ -55,6 +55,10 @@ nav a {
     margin: 0 1rem;
 }
 
+nav .nav-links {
+    display: flex;
+}
+
 #theme-switch {
     position: fixed;
     top: 1rem;
@@ -188,19 +192,23 @@ footer {
 
 @media screen and (max-width: 768px) {
     nav {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 1rem;
+        padding: 0.5rem 1rem;
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    nav .nav-links {
+        flex-grow: 1;
+        justify-content: space-between;
     }
 
     nav a {
-        margin: 0.5rem 0;
+        margin: 0 0.5rem;
+        white-space: nowrap;
     }
 
     #theme-switch {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
+        margin-left: 0.5rem;
     }
 
     .main-container {
