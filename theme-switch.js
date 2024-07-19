@@ -1,29 +1,19 @@
-const darkThemeStylesheet = document.getElementById('dark-theme-style');
-const lightThemeStylesheet = document.getElementById('light-theme-style');
+const themeSwitch = document.getElementById('theme-switch');
 const sunIcon = document.getElementById('sun-icon');
 const moonIcon = document.getElementById('moon-icon');
+const body = document.body;
 
 function setTheme(isDark) {
     if (isDark) {
-        darkThemeStylesheet.disabled = false;
-        lightThemeStylesheet.disabled = true;
+        body.classList.remove('light-theme');
         sunIcon.style.display = 'inline-block';
         moonIcon.style.display = 'none';
-        document.body.classList.remove('light-theme');
-        document.body.classList.add('dark-theme');
     } else {
-        darkThemeStylesheet.disabled = true;
-        lightThemeStylesheet.disabled = false;
+        body.classList.add('light-theme');
         sunIcon.style.display = 'none';
         moonIcon.style.display = 'inline-block';
-        document.body.classList.remove('dark-theme');
-        document.body.classList.add('light-theme');
     }
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
-
-    document.body.style.display = 'none';
-    document.body.offsetHeight; // Trigger a reflow
-    document.body.style.display = '';
 }
 
 function applyTheme() {
@@ -31,16 +21,13 @@ function applyTheme() {
     setTheme(savedTheme === 'dark');
 }
 
-// Apply theme immediately when the script runs
-applyTheme();
-
 function toggleTheme() {
     const currentTheme = localStorage.getItem('theme') || 'dark';
     setTheme(currentTheme === 'light');
 }
 
-document.getElementById('theme-switch').addEventListener('click', toggleTheme);
+themeSwitch.addEventListener('click', toggleTheme);
 
-// Apply theme again when the DOM is fully loaded
+// Apply theme when the script runs and when the DOM is fully loaded
+applyTheme();
 document.addEventListener('DOMContentLoaded', applyTheme);
-
