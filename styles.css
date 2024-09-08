@@ -398,6 +398,10 @@ footer {
         font-size: 1.1em;
     }
 
+    .project li{
+        font-size: 0.8rem;
+    }
+
     .project-link {
         font-size: 0.85em;
     }
