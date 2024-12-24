@@ -1,7 +1,5 @@
 # Personal Website / Portfolio
 
-This is just to document the progress I've made designing my website, because to be honest, the changes are pretty crazy.
-
 ### Current ver.:
 ![v4](assets/4.png)
 
