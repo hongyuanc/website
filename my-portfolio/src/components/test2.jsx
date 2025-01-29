@@ -1,69 +1,90 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mail, Github, Linkedin } from 'lucide-react';
 
-const CubeLogo = ({ rotation }) => { 
-  return ( 
-    <div className="w-12 h-12 flex items-center justify-center" style={{ perspective: '1000px' }}> 
-      <div className="relative w-8 h-8" style={{ 
-        transformStyle: 'preserve-3d', 
-        transform: `rotateX(${rotation}deg) rotateY(45deg) rotateX(35deg)`, 
-        transition: 'none',
-      }} > 
+const CubeLogo = ({ rotation }) => {
+  const isMobile = window.innerWidth <= 768;
+
+  return (
+    <div className="w-12 h-12 flex items-center justify-center" style={{ perspective: '1000px' }}>
+      <div
+        className="relative w-8 h-8"
+        style={{
+          transformStyle: 'preserve-3d',
+          transform: isMobile
+            ? `rotateY(${rotation}deg)` // Simplified rotation for mobile
+            : `rotateX(${rotation}deg) rotateY(45deg) rotateX(35deg)`,
+          transition: 'none',
+        }}
+      >
         {/* Front face */}
-        <div className="absolute inset-0" style={{ 
-          transform: 'translateZ(16px)', 
-          background: 'white', 
-          border: '2px solid black', 
-          backfaceVisibility: 'hidden' 
-        }} /> 
-        
+        <div
+          className="absolute inset-0"
+          style={{
+            transform: 'translateZ(16px)',
+            background: 'white',
+            border: '2px solid black',
+            backfaceVisibility: 'hidden',
+          }}
+        />
         {/* Back face */}
-        <div className="absolute inset-0" style={{ 
-          transform: 'translateZ(-16px) rotateY(180deg)', 
-          background: 'white', 
-          border: '2px solid black', 
-          backfaceVisibility: 'hidden' 
-        }} /> 
-        
+        <div
+          className="absolute inset-0"
+          style={{
+            transform: 'translateZ(-16px) rotateY(180deg)',
+            background: 'white',
+            border: '2px solid black',
+            backfaceVisibility: 'hidden',
+          }}
+        />
         {/* Right face */}
-        <div className="absolute inset-0" style={{ 
-          transform: 'rotateY(90deg) translateZ(16px)', 
-          background: 'white', 
-          border: '2px solid black', 
-          backfaceVisibility: 'hidden' 
-        }} /> 
-        
+        <div
+          className="absolute inset-0"
+          style={{
+            transform: 'rotateY(90deg) translateZ(16px)',
+            background: 'white',
+            border: '2px solid black',
+            backfaceVisibility: 'hidden',
+          }}
+        />
         {/* Left face */}
-        <div className="absolute inset-0" style={{ 
-          transform: 'rotateY(-90deg) translateZ(16px)', 
-          background: 'white', 
-          border: '2px solid black', 
-          backfaceVisibility: 'hidden' 
-        }} /> 
-        
+        <div
+          className="absolute inset-0"
+          style={{
+            transform: 'rotateY(-90deg) translateZ(16px)',
+            background: 'white',
+            border: '2px solid black',
+            backfaceVisibility: 'hidden',
+          }}
+        />
         {/* Top face */}
-        <div className="absolute inset-0" style={{ 
-          transform: 'rotateX(90deg) translateZ(16px)', 
-          background: 'white', 
-          border: '2px solid black', 
-          backfaceVisibility: 'hidden' 
-        }} /> 
-        
+        <div
+          className="absolute inset-0"
+          style={{
+            transform: 'rotateX(90deg) translateZ(16px)',
+            background: 'white',
+            border: '2px solid black',
+            backfaceVisibility: 'hidden',
+          }}
+        />
         {/* Bottom face */}
-        <div className="absolute inset-0" style={{ 
-          transform: 'rotateX(-90deg) translateZ(16px)', 
-          background: 'white', 
-          border: '2px solid black', 
-          backfaceVisibility: 'hidden' 
-        }} /> 
-      </div> 
-    </div> 
-  ); 
+        <div
+          className="absolute inset-0"
+          style={{
+            transform: 'rotateX(-90deg) translateZ(16px)',
+            background: 'white',
+            border: '2px solid black',
+            backfaceVisibility: 'hidden',
+          }}
+        />
+      </div>
+    </div>
+  );
 };
 
 const CubePortfolio = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const [rotationDegree, setRotationDegree] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const sections = ['HOME', 'PROJECTS', 'RESUME', 'COURSEWORK'];
   const containerRef = useRef(null);
   const sectionRefs = useRef([]);
@@ -74,9 +95,11 @@ const CubePortfolio = () => {
   const animationFrameRef = useRef(null);
   const targetRotationRef = useRef(0);
   const lockScrollRef = useRef(false);
+  const [touchStartY, setTouchStartY] = useState(null);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
+    setTimeout(() => setIsLoading(false), 1000); // Simulate loading
     return () => {
       document.body.style.overflow = 'unset';
       if (animationFrameRef.current) {
@@ -93,10 +116,7 @@ const CubePortfolio = () => {
     const animate = (currentTime) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      
-      // Easing function for smoother animation
       const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      
       const newRotation = startRotation + (targetRotation - startRotation) * eased;
       setRotationDegree(newRotation);
 
@@ -133,9 +153,10 @@ const CubePortfolio = () => {
     const isScrolledToTop = scrollTop === 0;
     const isScrolledToBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1;
 
-    if ((e.deltaY > 0 && isScrolledToBottom && currentSection < sections.length - 1) ||
-        (e.deltaY < 0 && isScrolledToTop && currentSection > 0)) {
-      
+    if (
+      (e.deltaY > 0 && isScrolledToBottom && currentSection < sections.length - 1) ||
+      (e.deltaY < 0 && isScrolledToTop && currentSection > 0)
+    ) {
       e.preventDefault();
       accumulatedDelta.current += e.deltaY;
 
@@ -156,29 +177,59 @@ const CubePortfolio = () => {
     }
   };
 
+  const handleTouchStart = (e) => {
+    setTouchStartY(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!touchStartY) return;
+
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchEndY - touchStartY;
+
+    if (Math.abs(deltaY) > 50) {
+      if (deltaY > 0 && currentSection > 0) {
+        goToSection(currentSection - 1);
+      } else if (deltaY < 0 && currentSection < sections.length - 1) {
+        goToSection(currentSection + 1);
+      }
+    }
+
+    setTouchStartY(null);
+  };
+
   const goToSection = (index) => {
     if (lockScrollRef.current || index === currentSection) return;
-    
+
     lockScrollRef.current = true;
     const targetRotation = index * 90;
     setCurrentSection(index);
-    
     smoothRotate(targetRotation, () => {
       lockScrollRef.current = false;
     });
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+      </div>
+    );
+  }
+
   return (
-    <div 
+    <div
       ref={containerRef}
       className="h-screen overflow-hidden"
       onWheel={handleWheel}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Navigation Bar */}
       <nav className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-sm border-b border-neutral-200">
         <div className="max-w-screen-xl mx-auto px-8 py-4 flex justify-between items-center">
-        <div 
-            className="flex items-center gap-3 cursor-pointer" 
+          <div
+            className="flex items-center gap-3 cursor-pointer"
             onClick={() => goToSection(0)}
           >
             <CubeLogo rotation={rotationDegree} />
@@ -188,8 +239,9 @@ const CubePortfolio = () => {
               <button
                 key={section}
                 onClick={() => goToSection(index)}
-                className={`text-sm tracking-wider transition-colors hover:text-black
-                  ${currentSection === index ? 'text-black' : 'text-neutral-400'}`}
+                className={`text-sm tracking-wider transition-colors hover:text-black ${
+                  currentSection === index ? 'text-black' : 'text-neutral-400'
+                }`}
               >
                 {section}
               </button>
@@ -197,13 +249,13 @@ const CubePortfolio = () => {
           </div>
         </div>
       </nav>
-      
+
       {/* 3D Scene */}
-      <div 
+      <div
         className="fixed inset-0"
         style={{
           perspective: '150vh',
-          perspectiveOrigin: '50% 50%'
+          perspectiveOrigin: '50% 50%',
         }}
       >
         <div
@@ -215,11 +267,11 @@ const CubePortfolio = () => {
         >
           {sections.map((section, index) => {
             const isActive = currentSection === index;
-            
+
             return (
               <div
                 key={section}
-                ref={el => sectionRefs.current[index] = el}
+                ref={(el) => (sectionRefs.current[index] = el)}
                 className="absolute inset-0 bg-white"
                 style={{
                   transform: `rotateX(${-index * 90}deg) translateZ(50vh)`,
@@ -227,48 +279,47 @@ const CubePortfolio = () => {
                   pointerEvents: isActive ? 'auto' : 'none',
                 }}
               >
-                <div 
+                <div
                   className="absolute inset-0 overflow-auto scroll-container"
                   style={{
-                    WebkitOverflowScrolling: 'touch'
+                    WebkitOverflowScrolling: 'touch',
                   }}
                 >
-                  {/* Section content remains the same */}
                   <div className="p-24 max-w-7xl mx-auto">
-                    {/* Home Section */}
+                    {/* Section content remains the same */}
                     {section === 'HOME' && (
                       <div className="max-w-2xl mx-auto text-center mt-40">
                         <h1 className="text-6xl font-light mb-6">Hong Yuan Cao</h1>
-                          <p className="text-xl text-neutral-600 mb-4">
-                            CS, Econ Student at Boston University
-                          </p>
-                          <p className="text-lg text-neutral-500 mb-8">
-                            Interested in Software Engineering and Game Development
-                          </p>
-                          <div className="flex gap-6 justify-center">
-                            <a 
-                              href="mailto:hongyc@bu.edu" 
-                              className="text-neutral-600 hover:text-black transition-colors"
-                              aria-label="Email"
-                            >
-                              <Mail size={24} />
-                            </a>
-                            <a 
-                              href="https://github.com/hongyuanc" 
-                              target='_blank'
-                              className="text-neutral-600 hover:text-black transition-colors"
-                              aria-label="GitHub"
-                            >
-                              <Github size={24} />
-                            </a>
-                            <a 
-                              href="https://www.linkedin.com/in/hong-yuan-cao/" 
-                              target='_blank'
-                              className="text-neutral-600 hover:text-black transition-colors"
-                              aria-label="LinkedIn"
-                            >
-                              <Linkedin size={24} />
-                            </a>
+                        <p className="text-xl text-neutral-600 mb-4">
+                          CS, Econ Student at Boston University
+                        </p>
+                        <p className="text-lg text-neutral-500 mb-8">
+                          Interested in Software Engineering and Game Development
+                        </p>
+                        <div className="flex gap-6 justify-center">
+                          <a
+                            href="mailto:hongyc@bu.edu"
+                            className="text-neutral-600 hover:text-black transition-colors"
+                            aria-label="Email"
+                          >
+                            <Mail size={24} />
+                          </a>
+                          <a
+                            href="https://github.com/hongyuanc"
+                            target="_blank"
+                            className="text-neutral-600 hover:text-black transition-colors"
+                            aria-label="GitHub"
+                          >
+                            <Github size={24} />
+                          </a>
+                          <a
+                            href="https://www.linkedin.com/in/hong-yuan-cao/"
+                            target="_blank"
+                            className="text-neutral-600 hover:text-black transition-colors"
+                            aria-label="LinkedIn"
+                          >
+                            <Linkedin size={24} />
+                          </a>
                         </div>
                       </div>
                     )}
@@ -461,6 +512,17 @@ const CubePortfolio = () => {
                       <div className="h-8"></div>
                       <h2 className="text-4xl font-light mb-12">Coursework</h2>
                       <div className="space-y-8">
+                        {/* Spring 2025 */}
+                        <div className="bg-white">
+                          <h3 className="text-2xl font-light mb-3">Spring 2025</h3>
+                          <ul className="space-y-2 text-neutral-600">
+                            <li>CS351 Distributed Systems</li>
+                            <li>CS460 Databases</li>
+                            <li>CS365 Foundation of Data Science</li>
+                            <li>WR152 Writing Research & Inquiry</li>
+                          </ul>
+                        </div>
+
                         {/* Fall 2024 */}
                         <div className="bg-white">
                           <h3 className="text-2xl font-light mb-3">Fall 2024</h3>
