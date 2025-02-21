@@ -458,8 +458,9 @@ const CubePortfolio = () => {
                                 <ul className="list-disc list-inside space-y-2 text-neutral-600">
                                   <li>Assisted in planning real estate projects for building acquisitions, each projecting NOI exceeding 10 million RMB</li>
                                   <li>Developed financial models for non-mortgage renovation loan projects, optimizing loan amounts and interest rates</li>
-                                  <li>Led the development of a centralized tracking system using Django to monitor project progress across databases</li>
-                                  <li>Designed and implemented RESTful APIs using Django REST Framework to integrate data from 4 internal systems, improving data accessibility and reporting efficiency</li>
+                                  <li>Architected a scalable backend system using Django and Alibaba Cloud RDS, unifying fragmented data from 4 internal MySQL databases into a centralized warehouse, reducing manual data aggregation time by 45% </li>
+                                  <li>Implemented RESTful APIs with Django REST Framework to establish real-time project data synchronization, enabling immediate access to updated project records for 200+ consultants</li>
+                                  <li>Optimized database performance on Alibaba Cloud RDS through indexing and connection pooling, reducing query latency by 23% while ensuring data security via SSL encryption for sensitive project records</li>
                                 </ul>
                               </div>
 
