@@ -330,14 +330,22 @@ const CubePortfolio = () => {
                         <div className='h-8'></div>
                         <h2 className="text-4xl font-light mb-12">Projects</h2>
                         <div className="space-y-12">
+                        <div className="bg-white">
+                            <h3 className="text-2xl font-light mb-3">Serverless Image Processing Pipeline</h3>
+                            <p className="text-neutral-500 mb-4 text-sm">AWS S3, Lambda, CloudFront, DynamoDB, Terraform, React</p>
+                            <p className="text-neutral-600 mb-4">
+                              A platform that utilizes cloud services to recieve and process/resize uploaded images.
+                            </p>
+                            <a href="https://github.com/hongyuanc?tab=repositories" target="_blank" className="text-neutral-400 hover:text-black transition-colors">
+                              View Project →
+                            </a>
+                          </div>
+                          
                           <div className="bg-white">
                             <h3 className="text-2xl font-light mb-3">WeTrack</h3>
                             <p className="text-neutral-500 mb-4 text-sm">Django, React Native, PostgreSQL, Android Studio</p>
                             <p className="text-neutral-600 mb-4">
-                              Led the development a React Native mobile app for real-time currency conversion and multi-currency expense
-                              tracking, utilizing Django backend and integrating third-party APIs for live exchange rates.
-                              Implemented JWT authentication and PostgreSQL optimization to securely manage over 1000 concurrent users.
-                              Used Redis caching to reduce API calls by 51% and improving average response time from 2.5s to 500ms.
+                              A mobile app that helps travelers and international students track expenses across multiple currencies.
                             </p>
                             <a href="https://github.com/k4teseo/wetrack" target="_blank" className="text-neutral-400 hover:text-black transition-colors">
                               View Project →
@@ -348,9 +356,7 @@ const CubePortfolio = () => {
                             <h3 className="text-2xl font-light mb-3">FilmHive</h3>
                             <p className="text-neutral-500 mb-4 text-sm">Flask, Vue.js, Python, Javascript, PostgreSQL</p>
                             <p className="text-neutral-600 mb-4">
-                              Developed a movie dashboard and recommendation app with Vue.js and Flask, using PostgreSQL as database.
-                              Implemented user authentication, bcrypt password hashing, and Flask-Login for personalized user experiences.
-                              Designed RESTful API endpoints for recommendations and user dashboard analytics, enhancing content discovery.
+                              A movie discovery platform that suggests films based on what you've already watched and enjoyed.
                             </p>
                             <a href="https://github.com/hongyuanc/movie-recommendation" target="_blank" className="text-neutral-400 hover:text-black transition-colors">
                               View Project →
@@ -361,9 +367,7 @@ const CubePortfolio = () => {
                             <h3 className="text-2xl font-light mb-3">Large Language Model Development</h3>
                             <p className="text-neutral-500 mb-4 text-sm">Python, PyTorch</p>
                             <p className="text-neutral-600 mb-4">
-                              Implemented a transformer-based language model using PyTorch, focusing on token and position embeddings.
-                              Developed custom attention mechanisms, including self-attention and masked attention for sequence generation.
-                              Created a training loop with AdamW optimizer, achieving progressive loss reduction over 50,000 iterations.
+                              My attempt at understanding how language models like GPT actually work under the hood. 
                             </p>
                             <a href="https://github.com/hongyuanc/building-a-llm" target="_blank" className="text-neutral-400 hover:text-black transition-colors">
                               View Project →
@@ -374,11 +378,7 @@ const CubePortfolio = () => {
                             <h3 className="text-2xl font-light mb-3">Game Development Portfolio</h3>
                             <p className="text-neutral-500 mb-4 text-sm">Unity, C#, Godot, Python, Pygame</p>
                             <p className="text-neutral-600 mb-4">
-                              Engineered a tower defense game in Unity, implementing grid-based resource management, diverse enemy AI
-                              behaviors, and a dynamic wave spawning system; utilized object pooling for optimized performance.
-                              Developed physics-based games focusing on collision detection algorithms and frame-rate independent movement.
-                              Implemented classic games in Python with emphasis on data structures for game state management, event-driven
-                              programming for user inputs, and algorithmic approach to growth mechanics and collision checks.
+                              Built games such as: Plants VS Zombies Clone, Flappy Bird Clone, Mario Clone, Pong, Snake etc.
                             </p>
                             <a href="https://github.com/hongyuanc?tab=repositories" target="_blank" className="text-neutral-400 hover:text-black transition-colors">
                               View Project →
@@ -412,7 +412,7 @@ const CubePortfolio = () => {
                             </div>
                             <div className="mt-4">
                               <p className="text-neutral-600 font-medium mb-2">Relevant Courses:</p>
-                              <p className="text-neutral-600">Software Engineering, Analysis of Algorithms, Computer Systems, Probability in Computing, Combinatoric Structures, Geometric Algorithms, Discrete Mathematics, Data Structures</p>
+                              <p className="text-neutral-600">Distributed Systems, Databases, Software Engineering, Analysis of Algorithms, Computer Systems, Probability in Computing, Combinatoric Structures, Geometric Algorithms, Discrete Mathematics, Data Structures</p>
                             </div>
                           </div>
 
@@ -421,20 +421,16 @@ const CubePortfolio = () => {
                             <h3 className="text-2xl font-light mb-6">Technical Skills</h3>
                             <div className="space-y-3">
                               <div>
-                                <p className="text-neutral-600 font-medium">Programming:</p>
-                                <p className="text-neutral-600">Python, Java, JavaScript, C#, Bash, Assembly, MySQL, PostgreSQL, TypeScript, LaTeX, HTML/CSS</p>
+                                <p className="text-neutral-600 font-medium">Programming Languages:</p>
+                                <p className="text-neutral-600">Python, JavaScript, TypeScript, Java, C#, Go, SQL, HTML/CSS, LaTeX, Assembly</p>
                               </div>
                               <div>
-                                <p className="text-neutral-600 font-medium">Technologies:</p>
-                                <p className="text-neutral-600">UNIX, VS Code, IntelliJ, Android Studio, Git, Godot, Unity, Docker, Postman</p>
+                                <p className="text-neutral-600 font-medium">Databases & Cloud:</p>
+                                <p className="text-neutral-600">MySQL, PostgreSQL, Redis, AWS (Lambda, S3, CloudFront, DynamoDB), Alibaba Cloud RDS</p>
                               </div>
                               <div>
-                                <p className="text-neutral-600 font-medium">Libraries:</p>
-                                <p className="text-neutral-600">NumPy, Pandas, Matplotlib, Scikit-learn, NLTK, Tkinter, Pygame, PyTorch</p>
-                              </div>
-                              <div>
-                                <p className="text-neutral-600 font-medium">Frameworks:</p>
-                                <p className="text-neutral-600">Django, Flask, React.js, React Native, Vue.js, Node.js</p>
+                                <p className="text-neutral-600 font-medium">Frameworks & Libraries:</p>
+                                <p className="text-neutral-600">Django, React.js, Vue.js, React Native, Flask, Node.js, Spring Boot, JUnit, pytest, PyTorch, NumPy, Pandas, Scikit-learn, NLTK, Matplotlib, Seaborn, BeautifulSoup, Axios, Terraform, Docker, Git</p>
                               </div>
                             </div>
                           </div>
@@ -447,7 +443,7 @@ const CubePortfolio = () => {
                               <div>
                                 <div className="flex justify-between items-start mb-4">
                                   <div>
-                                    <h4 className="text-xl font-medium mb-1">Technology Summer Analyst</h4>
+                                    <h4 className="text-xl font-medium mb-1">Software Engineering Intern</h4>
                                     <p className="text-neutral-600">Tospur Real Estate Consulting Co., Ltd</p>
                                   </div>
                                   <div className="text-right">
@@ -456,11 +452,9 @@ const CubePortfolio = () => {
                                   </div>
                                 </div>
                                 <ul className="list-disc list-inside space-y-2 text-neutral-600">
-                                  <li>Assisted in planning real estate projects for building acquisitions, each projecting NOI exceeding 10 million RMB</li>
-                                  <li>Developed financial models for non-mortgage renovation loan projects, optimizing loan amounts and interest rates</li>
-                                  <li>Architected a scalable backend system using Django and Alibaba Cloud RDS, unifying fragmented data from 4 internal MySQL databases into a centralized warehouse, reducing manual data aggregation time by 45% </li>
-                                  <li>Implemented RESTful APIs with Django REST Framework to establish real-time project data synchronization, enabling immediate access to updated project records for 200+ consultants</li>
-                                  <li>Optimized database performance on Alibaba Cloud RDS through indexing and connection pooling, reducing query latency by 23% while ensuring data security via SSL encryption for sensitive project records</li>
+                                  <li>Implemented a centralized data warehouse with Django and Alibaba Cloud RDS, creating a scalable backend system that integrated 4 internal MySQL databases and reduced manual data aggregation time by 45%</li>
+                                  <li>Implemented RESTful APIs with Django REST Framework that connected the database to frontend client applications, enabling 200+ consultants to access and update project records in real-time</li>
+                                  <li>Optimized database performance on Alibaba Cloud RDS by implementing B-tree indexing on high-traffic query columns and configuring connection pooling with optimal timeout settings, reducing query latency by 23%</li>
                                 </ul>
                               </div>
 
@@ -473,13 +467,13 @@ const CubePortfolio = () => {
                                   </div>
                                   <div className="text-right">
                                     <p className="text-neutral-500">Shanghai, China</p>
-                                    <p className="text-neutral-500">May 2024</p>
+                                    <p className="text-neutral-500">May 2024 - June 2024</p>
                                   </div>
                                 </div>
                                 <ul className="list-disc list-inside space-y-2 text-neutral-600">
-                                  <li>Gained hands-on experience in data preprocessing and management for an LLM used in test code generation</li>
-                                  <li>Prepared a 2.2GB training dataset for LLM in JUnit 5 using open-source GitHub repositories and ChatGPT</li>
-                                  <li>Collaborated with senior engineers to improve preprocessing methods, correcting 95.13% of data inconsistencies</li>
+                                  <li>Preprocessed and managed multi-modal data for a LLM designed for automated test code generation, leveraging Pandas and regex to clean, tokenize, and structure raw code</li>
+                                  <li>Curated a 2.2GB training dataset of JUnit 5 test cases from MIT/Apache-licensed repositories, using Git API for extraction and storing in JSON format with proper attribution metadata</li>
+                                  <li>Developed validation scripts in Python with senior engineers to identify and standardize code formatting inconsistencies across the dataset, successfully normalizing 95% of test cases for improved model training</li>
                                 </ul>
                               </div>
 
@@ -491,14 +485,72 @@ const CubePortfolio = () => {
                                     <p className="text-neutral-600">Tonic – Sprout Technologies INC</p>
                                   </div>
                                   <div className="text-right">
-                                    <p className="text-neutral-500">Remote - San Francisco, CA</p>
+                                    <p className="text-neutral-500">San Francisco, CA</p>
                                     <p className="text-neutral-500">June 2023 – October 2023</p>
                                   </div>
                                 </div>
                                 <ul className="list-disc list-inside space-y-2 text-neutral-600">
-                                  <li>Designed frontend website features such as graphic animations and formatting with JavaScript and HTML/CSS</li>
-                                  <li>Developed a Python-based web crawler to identify potential influencers on Instagram and TikTok for promotion</li>
-                                  <li>Utilized Python and Excel to process a database of over 3000 journalists and influencers for targeted outreach</li>
+                                  <li>Implemented responsive UI components and animations using React.js, increasing landing page engagement by 24%</li>
+                                  <li>Built a social media crawler using Python (BeautifulSoup4) that identified 200+ qualified influencers to target</li>
+                                  <li>Processed 3,000+ media contacts using Python (Pandas) and Excel, improving outreach response rates by 25%</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Projects Section */}
+                          <div className="bg-white">
+                            <h3 className="text-2xl font-light mb-6">Projects</h3>
+                            <div className="space-y-8">
+                              {/* Serverless Image Processing Pipeline */}
+                              <div>
+                                <div className="mb-2">
+                                  <h4 className="text-xl font-medium">Serverless Image Processing Pipeline</h4>
+                                  <p className="text-neutral-500 italic">AWS S3, Lambda, CloudFront, DynamoDB, Terraform, React</p>
+                                </div>
+                                <ul className="list-disc list-inside space-y-2 text-neutral-600">
+                                  <li>Provisioned serverless image processing infrastructure with Terraform, utilizing S3, Lambda, and CloudFront to reduce image delivery latency by 38%</li>
+                                  <li>Implemented Python-based Lambda functions triggered by S3 events to automatically resize uploaded images</li>
+                                  <li>Built React.js frontend connecting to AWS services through API Gateway, storing metadata in DynamoDB</li>
+                                </ul>
+                              </div>
+                              
+                              {/* Multi-Currency Budget Tracking Mobile App */}
+                              <div>
+                                <div className="mb-2">
+                                  <h4 className="text-xl font-medium">Multi-Currency Budget Tracking Mobile App</h4>
+                                  <p className="text-neutral-500 italic">Django, React Native, PostgreSQL, Android Studio</p>
+                                </div>
+                                <ul className="list-disc list-inside space-y-2 text-neutral-600">
+                                  <li>Developed a expense tracking app with React Native, featuring currency conversion via third-party API integration</li>
+                                  <li>Built RESTful APIs with Django REST Framework and PostgreSQL, implementing composite indexing on user-specific data fields and optimizing ORM queries to reduce data retrieval time by 65%</li>
+                                  <li>Engineered offline data persistence using AsyncStorage local caching with JWT authentication, reducing API requests by 57% and improving average user interaction response time from 1.2s to 400ms</li>
+                                </ul>
+                              </div>
+                              
+                              {/* Movie Recommendation Platform */}
+                              <div>
+                                <div className="mb-2">
+                                  <h4 className="text-xl font-medium">Movie Recommendation Platform</h4>
+                                  <p className="text-neutral-500 italic">Flask, Vue.js, Python, Javascript, PostgreSQL</p>
+                                </div>
+                                <ul className="list-disc list-inside space-y-2 text-neutral-600">
+                                  <li>Integrated movie database API with Flask to create an interactive dashboard using Vue.js components</li>
+                                  <li>Built content-based recommendation algorithm using CountVectorizer and cosine similarity to analyze metadata</li>
+                                  <li>Created secure user authentication with Flask-Login and bcrypt, storing user data in PostgreSQL</li>
+                                </ul>
+                              </div>
+                              
+                              {/* Neural Language Model Implementation */}
+                              <div>
+                                <div className="mb-2">
+                                  <h4 className="text-xl font-medium">Neural Language Model Implementation</h4>
+                                  <p className="text-neutral-500 italic">Python, PyTorch</p>
+                                </div>
+                                <ul className="list-disc list-inside space-y-2 text-neutral-600">
+                                  <li>Implemented transformer architecture in PyTorch with token and positional embeddings for sequential prediction</li>
+                                  <li>Designed custom attention mechanisms for next-token prediction, enabling model to generate coherent text</li>
+                                  <li>Implemented training pipeline with AdamW optimizer and batch processing, reducing model perplexity by 30%</li>
                                 </ul>
                               </div>
                             </div>
