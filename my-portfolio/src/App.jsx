@@ -1,7 +1,7 @@
-import CubePortfolio from './components/test2'
+import CubePortfolio from './components/Portfolio'
 
 function App() {
-  return <CubePortfolio />;
+  return <CubePortfolio/>;
 }
 
 export default App;

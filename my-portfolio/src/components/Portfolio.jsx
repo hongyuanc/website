@@ -1,37 +1,184 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Mail, Github, Linkedin, Download, FileText } from 'lucide-react';
+
+const CubeLogo = ({ rotation }) => {
+  // Simpler logo with better mobile detection
+  const isMobile = useRef(window.innerWidth <= 768);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      isMobile.current = window.innerWidth <= 768;
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <div className="w-10 h-10 flex items-center justify-center" style={{ perspective: '1000px' }}>
+      <div
+        className="relative w-8 h-8 transition-transform duration-500"
+        style={{
+          transformStyle: 'preserve-3d',
+          transform: isMobile.current
+            ? `rotateY(${rotation}deg)` // Simplified rotation for mobile
+            : `rotateX(${rotation}deg) rotateY(45deg) rotateX(35deg)`,
+        }}
+      >
+        {/* All six faces with cleaner styling */}
+        {[
+          { transform: 'translateZ(16px)', label: 'front' },
+          { transform: 'translateZ(-16px) rotateY(180deg)', label: 'back' },
+          { transform: 'rotateY(90deg) translateZ(16px)', label: 'right' },
+          { transform: 'rotateY(-90deg) translateZ(16px)', label: 'left' },
+          { transform: 'rotateX(90deg) translateZ(16px)', label: 'top' },
+          { transform: 'rotateX(-90deg) translateZ(16px)', label: 'bottom' }
+        ].map((face, index) => (
+          <div
+            key={face.label}
+            className="absolute inset-0 bg-white border-2 border-black"
+            style={{
+              transform: face.transform,
+              backfaceVisibility: 'hidden',
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// New component for PDF Resume with responsive design
+const ResumeViewer = () => {
+  const resumePdfUrl = "/resume.pdf"; // Path to your resume PDF in public directory
+  const isMobile = useRef(window.innerWidth <= 768);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      isMobile.current = window.innerWidth <= 768;
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  return (
+    <div className="w-full h-full flex flex-col">
+      {/* PDF actions bar */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-3xl font-light">Resume</h2>
+        <div className="flex gap-3">
+          <a 
+            href={resumePdfUrl} 
+            target="_blank" 
+            className="flex items-center gap-1 px-3 py-2 rounded-md bg-neutral-100 hover:bg-neutral-200 transition-colors"
+            rel="noopener noreferrer"
+          >
+            <FileText size={16} />
+            <span>View</span>
+          </a>
+          <a 
+            href={resumePdfUrl} 
+            download="Hong_Yuan_Cao_Resume.pdf" 
+            className="flex items-center gap-1 px-3 py-2 rounded-md bg-neutral-800 text-white hover:bg-black transition-colors"
+          >
+            <Download size={16} />
+            <span>Download</span>
+          </a>
+        </div>
+      </div>
+      
+      {/* PDF Viewer - only show on desktop */}
+      {!isMobile.current ? (
+        <div className="flex-grow overflow-visible">
+          <object
+            data={resumePdfUrl}
+            type="application/pdf"
+            className="w-full"
+            style={{ 
+              height: "calc(100vh - 180px)", // Adjusted height calculation
+              display: "block"
+            }}
+          >
+            <p>It appears your browser doesn't support embedded PDFs. You can <a href={resumePdfUrl}>download the PDF</a> instead.</p>
+          </object>
+        </div>
+      ) : (
+        // Mobile alternative message
+        <div className="mt-8 text-center text-neutral-600 px-4 py-16 pb-32">
+          <p>For the best experience viewing the resume, please use the View or Download buttons above.</p>
+          <div className="h-96 mb-32"></div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const CubePortfolio = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const [rotationDegree, setRotationDegree] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const sections = ['HOME', 'PROJECTS', 'RESUME', 'COURSEWORK'];
   const containerRef = useRef(null);
   const sectionRefs = useRef([]);
-  const lastScrollTime = useRef(Date.now());
-  const scrollTimeout = useRef(null);
+  const isTransitioningRef = useRef(false);
+  const lockScrollRef = useRef(false);
+  const [touchStartY, setTouchStartY] = useState(null);
+  const isMobile = useRef(window.innerWidth <= 768);
 
   useEffect(() => {
+    // Simplified loading
     document.body.style.overflow = 'hidden';
+    setTimeout(() => setIsLoading(false), 600);
+    
+    // Apply the custom font to the entire document
+    document.body.classList.add('font-poppins');
+    
+    // Check for mobile
+    const handleResize = () => {
+      isMobile.current = window.innerWidth <= 768;
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
     return () => {
       document.body.style.overflow = 'unset';
-      if (scrollTimeout.current) {
-        clearTimeout(scrollTimeout.current);
-      }
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
+  // Smoother animation with better performance
+  const smoothRotate = (targetRotation, onComplete) => {
+    const startRotation = rotationDegree;
+    const startTime = performance.now();
+    const duration = 600; // Better animation duration
+    
+    const animate = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      const newRotation = startRotation + (targetRotation - startRotation) * eased;
+      
+      setRotationDegree(newRotation);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        lockScrollRef.current = false;
+        if (onComplete) onComplete();
+      }
+    };
+
+    requestAnimationFrame(animate);
+  };
+
+  // Simplified wheel handler with better performance
   const handleWheel = (e) => {
-    e.preventDefault(); // Prevent default scroll behavior
-
-    // Return if already transitioning
-    if (isTransitioning) return;
-
-    // Implement scroll throttling
-    const now = Date.now();
-    if (now - lastScrollTime.current < 100) { // 100ms throttle
+    if (lockScrollRef.current || isTransitioningRef.current) {
+      e.preventDefault();
       return;
     }
-    lastScrollTime.current = now;
 
     const activeSection = sectionRefs.current[currentSection];
     if (!activeSection) return;
@@ -40,114 +187,168 @@ const CubePortfolio = () => {
     if (!scrollContainer) return;
 
     const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
-    const isScrolledToTop = scrollTop === 0;
-    const isScrolledToBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1;
+    const isScrolledToTop = scrollTop <= 10;
+    const isScrolledToBottom = scrollHeight - clientHeight - scrollTop <= 10;
 
-    // Clear any existing timeout
-    if (scrollTimeout.current) {
-      clearTimeout(scrollTimeout.current);
+    if (
+      (e.deltaY > 0 && isScrolledToBottom && currentSection < sections.length - 1) ||
+      (e.deltaY < 0 && isScrolledToTop && currentSection > 0)
+    ) {
+      e.preventDefault();
+      const direction = e.deltaY > 0 ? 1 : -1;
+      goToSection(currentSection + direction);
     }
-
-    // Set up new timeout for scroll handling
-    scrollTimeout.current = setTimeout(() => {
-      if (e.deltaY > 0 && isScrolledToBottom && currentSection < sections.length - 1) {
-        setIsTransitioning(true);
-        setCurrentSection(prev => prev + 1);
-        setRotationDegree(prev => prev + 90);
-        
-        // Reset transition state after animation
-        setTimeout(() => {
-          setIsTransitioning(false);
-        }, 500);
-      } else if (e.deltaY < 0 && isScrolledToTop && currentSection > 0) {
-        setIsTransitioning(true);
-        setCurrentSection(prev => prev - 1);
-        setRotationDegree(prev => prev - 90);
-        
-        // Reset transition state after animation
-        setTimeout(() => {
-          setIsTransitioning(false);
-        }, 500);
-      } else {
-        // Handle normal scrolling within section
-        scrollContainer.scrollTop += e.deltaY;
-      }
-    }, 10); // Small delay to batch rapid scroll events
   };
 
+  // Better touch handling for mobile
+  const handleTouchStart = (e) => {
+    if (isTransitioningRef.current) return;
+    setTouchStartY(e.touches[0].clientY);
+  };
+
+  const handleTouchMove = (e) => {
+    // Prevent default only when we need to handle the swipe
+    if (touchStartY && isTransitioningRef.current) {
+      e.preventDefault();
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!touchStartY || isTransitioningRef.current) return;
+
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchEndY - touchStartY;
+
+    // More responsive touch threshold
+    if (Math.abs(deltaY) > 40) {
+      const activeSection = sectionRefs.current[currentSection];
+      if (!activeSection) return;
+
+      const scrollContainer = activeSection.querySelector('.scroll-container');
+      if (!scrollContainer) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+      const isScrolledToTop = scrollTop <= 10;
+      const isScrolledToBottom = scrollHeight - clientHeight - scrollTop <= 10;
+
+      if (deltaY > 0 && isScrolledToTop && currentSection > 0) {
+        goToSection(currentSection - 1);
+      } else if (deltaY < 0 && isScrolledToBottom && currentSection < sections.length - 1) {
+        goToSection(currentSection + 1);
+      }
+    }
+
+    setTouchStartY(null);
+  };
+
+  // Cleaner section navigation
   const goToSection = (index) => {
-    if (isTransitioning || currentSection === index) return;
+    if (lockScrollRef.current || index === currentSection || index < 0 || index >= sections.length) return;
+
+    lockScrollRef.current = true;
+    isTransitioningRef.current = true;
     
-    setIsTransitioning(true);
-    
-    // Calculate rotation as before
-    const currentTurns = rotationDegree / 360;
-    const currentOffset = rotationDegree % 360;
     const targetRotation = index * 90;
-    let newRotation = targetRotation;
-    newRotation += Math.floor(currentTurns) * 360;
-    const currentNormalized = ((currentOffset % 360) + 360) % 360;
-    const targetNormalized = ((targetRotation % 360) + 360) % 360;
-    let clockwiseDist = ((targetNormalized - currentNormalized + 360) % 360);
-    let counterClockwiseDist = ((currentNormalized - targetNormalized + 360) % 360);
-    
-    if (clockwiseDist > counterClockwiseDist) {
-      newRotation = rotationDegree - counterClockwiseDist;
-    } else {
-      newRotation = rotationDegree + clockwiseDist;
-    }
-    
-    // Scroll current section to top before transitioning
-    const currentScrollContainer = sectionRefs.current[currentSection]?.querySelector('.scroll-container');
-    if (currentScrollContainer) {
-      currentScrollContainer.scrollTop = 0;
-    }
-    
     setCurrentSection(index);
-    setRotationDegree(newRotation);
     
-    // After transition, ensure new section is scrolled to top
-    setTimeout(() => {
-      const newScrollContainer = sectionRefs.current[index]?.querySelector('.scroll-container');
-      if (newScrollContainer) {
-        newScrollContainer.scrollTop = 0;
-      }
-      setIsTransitioning(false);
-    }, 500);
+    smoothRotate(targetRotation, () => {
+      isTransitioningRef.current = false;
+      lockScrollRef.current = false;
+    });
+    
+    // Close mobile menu if open
+    setMobileMenuOpen(false);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-white">
+        <div className="text-2xl font-light animate-pulse">Loading...</div>
+      </div>
+    );
+  }
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      className="h-screen overflow-hidden"
+      className="h-screen overflow-hidden bg-white font-tech"
+      style={{ fontFamily: "'JetBrains Mono', monospace" }}
       onWheel={handleWheel}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
-      {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-sm border-b border-neutral-200">
-        <div className="max-w-screen-xl mx-auto px-8 py-4 flex justify-between items-center">
-          <div className="font-medium text-xl">PORTFOLIO</div>
-          <div className="flex gap-8">
+      {/* Minimalist Navigation Bar */}
+      <nav className="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-neutral-100">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => goToSection(0)}
+          >
+            <CubeLogo rotation={rotationDegree} />
+          </div>
+          
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex gap-8">
             {sections.map((section, index) => (
               <button
                 key={section}
                 onClick={() => goToSection(index)}
-                className={`text-sm tracking-wider transition-colors hover:text-black
-                  ${currentSection === index ? 'text-black' : 'text-neutral-400'}`}
+                className={`text-sm tracking-wider transition-colors hover:text-black ${
+                  currentSection === index ? 'text-black' : 'text-neutral-400'
+                }`}
               >
                 {section}
               </button>
             ))}
           </div>
+          
+          {/* Mobile Menu Button */}
+          <button 
+            className="md:hidden text-neutral-600"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            )}
+          </button>
         </div>
+        
+        {/* Mobile Navigation Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-neutral-100 py-4 px-6 animate-fadeIn">
+            <div className="flex flex-col space-y-4">
+              {sections.map((section, index) => (
+                <button
+                  key={section}
+                  onClick={() => goToSection(index)}
+                  className={`text-sm tracking-wider transition-colors text-left hover:text-black py-2 ${
+                    currentSection === index ? 'text-black' : 'text-neutral-400'
+                  }`}
+                >
+                  {section}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </nav>
-      
-      {/* 3D Scene */}
-      <div 
+
+      {/* 3D Scene - Preserved but optimized */}
+      <div
         className="fixed inset-0"
         style={{
           perspective: '150vh',
-          perspectiveOrigin: '50% 50%'
+          perspectiveOrigin: '50% 50%',
         }}
       >
         <div
@@ -155,125 +356,218 @@ const CubePortfolio = () => {
           style={{
             transformStyle: 'preserve-3d',
             transform: `translateZ(-50vh) rotateX(${rotationDegree}deg)`,
-            transition: 'transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1)',
+            transition: 'transform 0.1s ease-out', // Smoother small movements
           }}
         >
           {sections.map((section, index) => {
             const isActive = currentSection === index;
-            
+
             return (
               <div
                 key={section}
-                ref={el => sectionRefs.current[index] = el}
+                ref={(el) => (sectionRefs.current[index] = el)}
                 className="absolute inset-0 bg-white"
                 style={{
                   transform: `rotateX(${-index * 90}deg) translateZ(50vh)`,
                   transformStyle: 'preserve-3d',
-                  // Show all faces during transitions
-                  visibility: isTransitioning || Math.abs(currentSection - index) <= 1 ? 'visible' : 'hidden',
                   pointerEvents: isActive ? 'auto' : 'none',
                 }}
               >
-                {/* Scrollable Content Container */}
-                <div 
+                <div
                   className="absolute inset-0 overflow-auto scroll-container"
                   style={{
-                    WebkitOverflowScrolling: 'touch'
+                    WebkitOverflowScrolling: 'touch',
                   }}
                 >
-                  <div className="p-24 max-w-7xl mx-auto">
-                    {/* Home Section */}
+                  {/* Simplified content containers with better spacing */}
+                  <div className="p-4 md:p-8 lg:p-16 max-w-4xl mx-auto">
+                    {/* HOME Section - Centered for all devices */}
                     {section === 'HOME' && (
-                      <div className="max-w-2xl mx-auto text-center mt-20">
-                        <h1 className="text-6xl font-light mb-6">Your Name</h1>
-                        <p className="text-xl text-neutral-600 mb-4">
-                          Full Stack Developer & UI/UX Designer
+                      <div className="max-w-2xl mx-auto space-y-6 text-center" style={{ marginTop: isMobile.current ? '35vh' : '17.5rem' }}>
+                      <h1 className="text-3xl md:text-6xl font-light mb-6">Hong Yuan Cao</h1>
+                        <p className="text-lg md:text-xl text-neutral-600 mb-4">
+                          CS, Econ Student at Boston University
                         </p>
-                        <p className="text-lg text-neutral-500 mb-8">
-                          Building beautiful and functional web experiences
+                        <p className="text-base md:text-lg text-neutral-500 mb-8">
+                          Interested in Software Engineering and Game Development
                         </p>
-                        <div className="flex gap-6 justify-center">
-                          <a href="mailto:example@email.com" className="text-neutral-600 hover:text-black transition-colors">
-                            <i className="fas fa-envelope text-2xl" />
+                        <div className="flex justify-center gap-6">
+                          <a
+                            href="mailto:hongyc@bu.edu"
+                            className="text-neutral-600 hover:text-black transition-colors"
+                            aria-label="Email"
+                          >
+                            <Mail size={24} />
                           </a>
-                          <a href="#" className="text-neutral-600 hover:text-black transition-colors">
-                            <i className="fab fa-github text-2xl" />
+                          <a
+                            href="https://github.com/hongyuanc"
+                            target="_blank"
+                            className="text-neutral-600 hover:text-black transition-colors"
+                            aria-label="GitHub"
+                          >
+                            <Github size={24} />
                           </a>
-                          <a href="#" className="text-neutral-600 hover:text-black transition-colors">
-                            <i className="fab fa-linkedin text-2xl" />
+                          <a
+                            href="https://www.linkedin.com/in/hong-yuan-cao/"
+                            target="_blank"
+                            className="text-neutral-600 hover:text-black transition-colors"
+                            aria-label="LinkedIn"
+                          >
+                            <Linkedin size={24} />
                           </a>
+                        </div>
+                        
+                        {/* Visual indicator to scroll down */}
+                        <div className="flex justify-center mt-12 animate-bounce">
+                          <button 
+                            onClick={() => goToSection(1)} 
+                            className="text-neutral-300 hover:text-neutral-600 transition-colors"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                          </button>
                         </div>
                       </div>
                     )}
 
-                    {/* Projects Section */}
+                    {/* PROJECTS Section - Cleaner cards with hover effects */}
                     {section === 'PROJECTS' && (
-                      <div className="max-w-4xl mx-auto">
-                        <div className='h-12'></div>
-                        <h2 className="text-4xl font-light mb-12">Projects</h2>
-                        <div className="space-y-12">
-                          {[1, 2, 3, 4, 5].map((project) => (
-                            <div key={project} className="bg-white">
-                              <h3 className="text-2xl font-light mb-3">Project {project}</h3>
-                              <p className="text-neutral-500 mb-4 text-sm">Technologies Used</p>
-                              <p className="text-neutral-600 mb-4">
-                                Project description goes here. This is a longer description to ensure
-                                we have enough content to test scrolling within the section.
-                              </p>
-                              <a href="#" className="text-neutral-400 hover:text-black transition-colors">
-                                View Project →
-                              </a>
-                            </div>
-                          ))}
+                      <div className="max-w-3xl mx-auto mt-16 md:mt-20">
+                        <h2 className="text-3xl font-light mb-12">Projects</h2>
+                        <div className="space-y-10 md:space-y-16">
+                          {/* Project cards with hover effects */}
+                          <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+                            <h3 className="text-xl md:text-2xl font-light mb-2">Serverless Image Processing Pipeline</h3>
+                            <p className="text-neutral-500 mb-3 text-sm">AWS S3, Lambda, CloudFront, DynamoDB, Terraform, React</p>
+                            <p className="text-neutral-600 mb-3">
+                              A platform that utilizes cloud services to receive and process/resize uploaded images.
+                            </p>
+                            <a href="https://github.com/hongyuanc?tab=repositories" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
+                              View Project →
+                            </a>
+                          </div>
+                          
+                          <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+                            <h3 className="text-xl md:text-2xl font-light mb-2">WeTrack</h3>
+                            <p className="text-neutral-500 mb-3 text-sm">Django, React Native, PostgreSQL, Android Studio</p>
+                            <p className="text-neutral-600 mb-3">
+                              A mobile app that helps travelers and international students track expenses across multiple currencies.
+                            </p>
+                            <a href="https://github.com/k4teseo/wetrack" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
+                              View Project →
+                            </a>
+                          </div>
+
+                          <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+                            <h3 className="text-xl md:text-2xl font-light mb-2">FilmHive</h3>
+                            <p className="text-neutral-500 mb-3 text-sm">Flask, Vue.js, Python, Javascript, PostgreSQL</p>
+                            <p className="text-neutral-600 mb-3">
+                              A movie discovery platform that suggests films based on what you've already watched and enjoyed.
+                            </p>
+                            <a href="https://github.com/hongyuanc/movie-recommendation" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
+                              View Project →
+                            </a>
+                          </div>
+
+                          <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+                            <h3 className="text-xl md:text-2xl font-light mb-2">Large Language Model Development</h3>
+                            <p className="text-neutral-500 mb-3 text-sm">Python, PyTorch</p>
+                            <p className="text-neutral-600 mb-3">
+                              My attempt at understanding how language models like GPT actually work under the hood. 
+                            </p>
+                            <a href="https://github.com/hongyuanc/building-a-llm" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
+                              View Project →
+                            </a>
+                          </div>
                         </div>
-                        <div className='h-48'></div>
                       </div>
                     )}
 
-                    {/* Resume Section */}
                     {section === 'RESUME' && (
-                      <div className="max-w-4xl mx-auto">
-                        <div className='h-12'></div>
-                        <h2 className="text-4xl font-light mb-12">Resume</h2>
-                        <div className="space-y-12">
-                          {[1, 2, 3, 4].map((item) => (
-                            <div key={item} className="bg-white">
-                              <div className="flex justify-between items-start mb-4">
-                                <div>
-                                  <h4 className="text-2xl font-light mb-3">Position {item}</h4>
-                                  <p className="text-neutral-500">Company Name</p>
-                                </div>
-                                <p className="text-neutral-500">Year - Present</p>
-                              </div>
-                              <ul className="list-disc list-inside space-y-2 text-neutral-600">
-                                <li>Achievement one</li>
-                                <li>Achievement two</li>
-                                <li>Achievement three</li>
-                              </ul>
-                            </div>
-                          ))}
-                        </div>
-                        <div className='h-48'></div>
+                      <div className="w-full h-full mt-16 md:mt-20">
+                        <ResumeViewer />
+                        
+                        {/* Add extra space at bottom to ensure scrollability */}
+                        <div className="h-20"></div>
                       </div>
                     )}
 
-                    {/* Coursework Section */}
+                    {/* COURSEWORK Section - Clean grid layout */}
                     {section === 'COURSEWORK' && (
-                      <div className="max-w-4xl mx-auto">
-                        <div className='h-12'></div>
-                        <h2 className="text-4xl font-light mb-12">Coursework</h2>
-                        <div className="space-y-8">
-                          {[1, 2, 3, 4].map((course) => (
-                            <div key={course} className="bg-white">
-                              <h3 className="text-2xl font-light mb-4">Course Category {course}</h3>
-                              <ul className="space-y-2 text-neutral-600">
-                                <li>Course One</li>
-                                <li>Course Two</li>
-                                <li>Course Three</li>
-                                <li>Course Four</li>
-                              </ul>
-                            </div>
-                          ))}
+                      <div className="max-w-3xl mx-auto mt-16 md:mt-20">
+                        <h2 className="text-3xl font-light mb-12">Coursework</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          {/* Spring 2025 */}
+                          <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+                            <h3 className="text-xl font-light mb-3">Spring 2025</h3>
+                            <ul className="space-y-1 text-neutral-600">
+                              <li>CS351 Distributed Systems</li>
+                              <li>CS460 Databases</li>
+                              <li>CS365 Foundation of Data Science</li>
+                              <li>WR152 Writing Research & Inquiry</li>
+                            </ul>
+                          </div>
+
+                          {/* Fall 2024 */}
+                          <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+                            <h3 className="text-xl font-light mb-2">Fall 2024</h3>
+                            <p className="text-neutral-500 mb-2 text-sm italic">Study abroad @ BU London</p>
+                            <ul className="space-y-1 text-neutral-600">
+                              <li>CS411 Software Engineering</li>
+                              <li>CS330 Intro to Analysis of Algorithms</li>
+                              <li>EC364 British Economic Performance</li>
+                              <li>AH381 London Architecture & Urbanism</li>
+                            </ul>
+                          </div>
+
+                          {/* Spring 2024 */}
+                          <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+                            <h3 className="text-xl font-light mb-3">Spring 2024</h3>
+                            <ul className="space-y-1 text-neutral-600">
+                              <li>CS131 Combinatoric Structures</li>
+                              <li>MA581 Probability</li>
+                              <li>EC328 Urban and Regional Economics</li>
+                              <li>CL101 The World of Greece</li>
+                            </ul>
+                          </div>
+
+                          {/* Fall 2023 */}
+                          <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+                            <h3 className="text-xl font-light mb-3">Fall 2023</h3>
+                            <ul className="space-y-1 text-neutral-600">
+                              <li>CS132 Geometric Algorithms</li>
+                              <li>CS210 Computer Systems</li>
+                              <li>EC332 Market Structure and Economic Performance</li>
+                              <li>LJ112 Japanese 2</li>
+                            </ul>
+                          </div>
+
+                          {/* Spring 2023 */}
+                          <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+                            <h3 className="text-xl font-light mb-3">Spring 2024</h3>
+                            <ul className="space-y-1 text-neutral-600">
+                              <li>EC202 Intermed Macro Economics</li>
+                              <li>EC204 Empirical Economics II</li>
+                              <li>CS112 Intro to CS II</li>
+                              <li>CG101 Modern Greek Lang Lit Culture</li>
+                            </ul>
+                          </div>
+
+                          {/* Fall 2022 */}
+                          <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+                            <h3 className="text-xl font-light mb-3">Fall 2023</h3>
+                            <ul className="space-y-1 text-neutral-600">
+                              <li>EC201 Intermed Micro Economics</li>
+                              <li>EC203 Empirical Economics I</li>
+                              <li>CS111 Intro to CS I</li>
+                              <li>WR120 Writing Seminar</li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div className="mt-24 text-center text-neutral-500 text-sm">
+                          © {new Date().getFullYear()} Hong Yuan Cao
                         </div>
                       </div>
                     )}
