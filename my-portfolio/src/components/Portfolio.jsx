@@ -1,5 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Mail, Github, Linkedin, Download, FileText } from 'lucide-react';
+import { Mail, Github, Linkedin, Download, FileText, ChevronUp, ChevronDown } from 'lucide-react';
+
+// Navigation Button Component for Mobile - simplified to just an arrow
+const NavigationButton = ({ direction, onClick }) => {
+  return (
+    <div
+      onClick={onClick}
+      className="flex items-center justify-center text-neutral-500 hover:text-black transition-colors cursor-pointer"
+      aria-label={`Navigate ${direction}`}
+    >
+      {direction === 'up' ? <ChevronUp size={28} /> : <ChevronDown size={28} />}
+    </div>
+  );
+};
 
 const CubeLogo = ({ rotation }) => {
   // Simpler logo with better mobile detection
@@ -65,8 +78,8 @@ const ResumeViewer = () => {
   
   return (
     <div className="w-full h-full flex flex-col">
-      {/* PDF actions bar */}
-      <div className="flex justify-between items-center mb-4">
+      {/* PDF actions bar - added extra margin-top for mobile */}
+      <div className={`flex justify-between items-center mb-4 ${isMobile.current ? 'mt-16' : ''}`}>
         <h2 className="text-3xl font-light">Resume</h2>
         <div className="flex gap-3">
           <a 
@@ -144,8 +157,14 @@ const CubePortfolio = () => {
     
     window.addEventListener('resize', handleResize);
     
+    // For mobile devices, completely disable scrolling between sections
+    if (isMobile.current) {
+      document.body.style.overscrollBehavior = 'none';
+    }
+    
     return () => {
       document.body.style.overflow = 'unset';
+      document.body.style.overscrollBehavior = 'auto';
       window.removeEventListener('resize', handleResize);
     };
   }, []);
@@ -178,8 +197,14 @@ const CubePortfolio = () => {
     requestAnimationFrame(animate);
   };
 
-  // Simplified wheel handler with better performance
+  // Completely disable wheel event for mobile to prevent section scrolling
   const handleWheel = (e) => {
+    if (isMobile.current) {
+      // On mobile, completely prevent wheel events from navigating between sections
+      return;
+    }
+    
+    // Keep desktop wheel behavior
     if (lockScrollRef.current || isTransitioningRef.current) {
       e.preventDefault();
       return;
@@ -205,64 +230,22 @@ const CubePortfolio = () => {
     }
   };
 
-  // Improved touch handling for mobile with debounce mechanism
+  // Completely disable section swiping - touch only affects content scrolling
   const handleTouchStart = (e) => {
-    if (isTransitioningRef.current || lockScrollRef.current) return;
-    
-    touchStartY.current = e.touches[0].clientY;
-    touchStartTime.current = Date.now();
+    // Only track touches for within-section scrolling
+    // Do not track for section navigation via swipes
+    if (e.target.closest('.nav-button')) {
+      return; // Don't track touch events on navigation buttons
+    }
   };
 
   const handleTouchMove = (e) => {
-    // Prevent overscroll behavior on iOS
-    if (isTransitioningRef.current) {
-      e.preventDefault();
-    }
+    // Only handle content scrolling, no section navigation
   };
 
   const handleTouchEnd = (e) => {
-    if (!touchStartY.current || isTransitioningRef.current || lockScrollRef.current) return;
-
-    const touchEndY = e.changedTouches[0].clientY;
-    const deltaY = touchEndY - touchStartY.current;
-    const touchTime = Date.now() - touchStartTime.current;
-
-    // Get active section
-    const activeSection = sectionRefs.current[currentSection];
-    if (!activeSection) {
-      touchStartY.current = null;
-      touchStartTime.current = null;
-      return;
-    }
-
-    const scrollContainer = activeSection.querySelector('.scroll-container');
-    if (!scrollContainer) {
-      touchStartY.current = null;
-      touchStartTime.current = null;
-      return;
-    }
-
-    const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
-    const isScrolledToTop = scrollTop <= 5; // More forgiving threshold
-    const isScrolledToBottom = scrollHeight - clientHeight - scrollTop <= 5;
-
-    // Improved touch detection logic: check velocity for better responsiveness
-    const swipeVelocity = Math.abs(deltaY) / touchTime;
-    const isSwipe = Math.abs(deltaY) > 30 && swipeVelocity > 0.15;
-
-    if (isSwipe) {
-      if (deltaY > 0 && isScrolledToTop && currentSection > 0) {
-        // Swiping down at top of content - go to previous section
-        goToSection(currentSection - 1);
-      } else if (deltaY < 0 && isScrolledToBottom && currentSection < sections.length - 1) {
-        // Swiping up at bottom of content - go to next section
-        goToSection(currentSection + 1);
-      }
-    }
-
-    // Reset touch tracking
-    touchStartY.current = null;
-    touchStartTime.current = null;
+    // No section navigation via swipes
+    // All section navigation is now through the arrow buttons
   };
 
   // Cleaner section navigation with improved mobile handling
@@ -383,6 +366,8 @@ const CubePortfolio = () => {
         >
           {sections.map((section, index) => {
             const isActive = currentSection === index;
+            const isPrevSectionAvailable = index > 0;
+            const isNextSectionAvailable = index < sections.length - 1;
 
             return (
               <div
@@ -397,13 +382,42 @@ const CubePortfolio = () => {
                   pointerEvents: isActive ? 'auto' : 'none',
                 }}
               >
+                {/* Mobile Section Navigation Buttons - Only visible on mobile */}
+                {isActive && isMobile.current && (
+                  <>
+                    {/* Up button - not shown on first section */}
+                    {isPrevSectionAvailable && index !== 0 && (
+                      <div className="fixed top-20 inset-x-0 flex justify-center z-40 md:hidden nav-button animate-bounce">
+                        <NavigationButton 
+                          direction="up" 
+                          onClick={() => goToSection(index - 1)}
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Down button - not shown on first or last section */}
+                    {isNextSectionAvailable && index !== 0 && (
+                      <div className="fixed bottom-8 inset-x-0 flex justify-center z-40 md:hidden nav-button animate-bounce">
+                        <NavigationButton 
+                          direction="down" 
+                          onClick={() => goToSection(index + 1)}
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+
                 <div
                   className="absolute inset-0 overflow-auto scroll-container"
                   style={{
                     WebkitOverflowScrolling: 'touch',
                     scrollBehavior: 'smooth',
-                    // Improved momentum scrolling on iOS
+                    // Prevent scroll chaining and overscroll effects on mobile
                     overscrollBehavior: 'contain',
+                    // Prevent scrolling to next/previous sections on mobile
+                    ...(isMobile.current && {
+                      overscrollBehaviorY: 'none'
+                    })
                   }}
                 >
                   {/* Simplified content containers with better spacing */}
@@ -448,7 +462,7 @@ const CubePortfolio = () => {
                         <div className="flex justify-center mt-12 animate-bounce">
                           <button 
                             onClick={() => goToSection(1)} 
-                            className="text-neutral-300 hover:text-neutral-600 transition-colors"
+                            className="text-neutral-300 hover:text-neutral-600 transition-colors nav-button"
                             aria-label="Scroll to Projects section"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
