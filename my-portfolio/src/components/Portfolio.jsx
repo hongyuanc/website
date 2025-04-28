@@ -20,8 +20,9 @@ const CubeLogo = ({ rotation }) => {
         className="relative w-8 h-8 transition-transform duration-500"
         style={{
           transformStyle: 'preserve-3d',
+          // Fixed mobile rotation to match the page transition direction
           transform: isMobile.current
-            ? `rotateY(${rotation}deg)` // Simplified rotation for mobile
+            ? `rotateX(${rotation}deg)` // Changed to rotateX to match section transitions
             : `rotateX(${rotation}deg) rotateY(45deg) rotateX(35deg)`,
         }}
       >
@@ -124,7 +125,8 @@ const CubePortfolio = () => {
   const sectionRefs = useRef([]);
   const isTransitioningRef = useRef(false);
   const lockScrollRef = useRef(false);
-  const [touchStartY, setTouchStartY] = useState(null);
+  const touchStartY = useRef(null);
+  const touchStartTime = useRef(null);
   const isMobile = useRef(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -152,11 +154,13 @@ const CubePortfolio = () => {
   const smoothRotate = (targetRotation, onComplete) => {
     const startRotation = rotationDegree;
     const startTime = performance.now();
-    const duration = 600; // Better animation duration
+    // Faster animation on mobile for better responsiveness
+    const duration = isMobile.current ? 450 : 600;
     
     const animate = (currentTime) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
+      // Improved easing for smoother animation
       const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
       const newRotation = startRotation + (targetRotation - startRotation) * eased;
       
@@ -166,6 +170,7 @@ const CubePortfolio = () => {
         requestAnimationFrame(animate);
       } else {
         lockScrollRef.current = false;
+        isTransitioningRef.current = false;
         if (onComplete) onComplete();
       }
     };
@@ -200,50 +205,69 @@ const CubePortfolio = () => {
     }
   };
 
-  // Better touch handling for mobile
+  // Improved touch handling for mobile with debounce mechanism
   const handleTouchStart = (e) => {
-    if (isTransitioningRef.current) return;
-    setTouchStartY(e.touches[0].clientY);
+    if (isTransitioningRef.current || lockScrollRef.current) return;
+    
+    touchStartY.current = e.touches[0].clientY;
+    touchStartTime.current = Date.now();
   };
 
   const handleTouchMove = (e) => {
-    // Prevent default only when we need to handle the swipe
-    if (touchStartY && isTransitioningRef.current) {
+    // Prevent overscroll behavior on iOS
+    if (isTransitioningRef.current) {
       e.preventDefault();
     }
   };
 
   const handleTouchEnd = (e) => {
-    if (!touchStartY || isTransitioningRef.current) return;
+    if (!touchStartY.current || isTransitioningRef.current || lockScrollRef.current) return;
 
     const touchEndY = e.changedTouches[0].clientY;
-    const deltaY = touchEndY - touchStartY;
+    const deltaY = touchEndY - touchStartY.current;
+    const touchTime = Date.now() - touchStartTime.current;
 
-    // More responsive touch threshold
-    if (Math.abs(deltaY) > 40) {
-      const activeSection = sectionRefs.current[currentSection];
-      if (!activeSection) return;
+    // Get active section
+    const activeSection = sectionRefs.current[currentSection];
+    if (!activeSection) {
+      touchStartY.current = null;
+      touchStartTime.current = null;
+      return;
+    }
 
-      const scrollContainer = activeSection.querySelector('.scroll-container');
-      if (!scrollContainer) return;
+    const scrollContainer = activeSection.querySelector('.scroll-container');
+    if (!scrollContainer) {
+      touchStartY.current = null;
+      touchStartTime.current = null;
+      return;
+    }
 
-      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
-      const isScrolledToTop = scrollTop <= 10;
-      const isScrolledToBottom = scrollHeight - clientHeight - scrollTop <= 10;
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+    const isScrolledToTop = scrollTop <= 5; // More forgiving threshold
+    const isScrolledToBottom = scrollHeight - clientHeight - scrollTop <= 5;
 
+    // Improved touch detection logic: check velocity for better responsiveness
+    const swipeVelocity = Math.abs(deltaY) / touchTime;
+    const isSwipe = Math.abs(deltaY) > 30 && swipeVelocity > 0.15;
+
+    if (isSwipe) {
       if (deltaY > 0 && isScrolledToTop && currentSection > 0) {
+        // Swiping down at top of content - go to previous section
         goToSection(currentSection - 1);
       } else if (deltaY < 0 && isScrolledToBottom && currentSection < sections.length - 1) {
+        // Swiping up at bottom of content - go to next section
         goToSection(currentSection + 1);
       }
     }
 
-    setTouchStartY(null);
+    // Reset touch tracking
+    touchStartY.current = null;
+    touchStartTime.current = null;
   };
 
-  // Cleaner section navigation
+  // Cleaner section navigation with improved mobile handling
   const goToSection = (index) => {
-    if (lockScrollRef.current || index === currentSection || index < 0 || index >= sections.length) return;
+    if (isTransitioningRef.current || lockScrollRef.current || index === currentSection || index < 0 || index >= sections.length) return;
 
     lockScrollRef.current = true;
     isTransitioningRef.current = true;
@@ -251,10 +275,7 @@ const CubePortfolio = () => {
     const targetRotation = index * 90;
     setCurrentSection(index);
     
-    smoothRotate(targetRotation, () => {
-      isTransitioningRef.current = false;
-      lockScrollRef.current = false;
-    });
+    smoothRotate(targetRotation);
     
     // Close mobile menu if open
     setMobileMenuOpen(false);
@@ -307,6 +328,7 @@ const CubePortfolio = () => {
           <button 
             className="md:hidden text-neutral-600"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {mobileMenuOpen ? (
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -325,7 +347,7 @@ const CubePortfolio = () => {
         
         {/* Mobile Navigation Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-neutral-100 py-4 px-6 animate-fadeIn">
+          <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-neutral-100 py-4 px-6 animate-fadeIn shadow-sm">
             <div className="flex flex-col space-y-4">
               {sections.map((section, index) => (
                 <button
@@ -356,7 +378,7 @@ const CubePortfolio = () => {
           style={{
             transformStyle: 'preserve-3d',
             transform: `translateZ(-50vh) rotateX(${rotationDegree}deg)`,
-            transition: 'transform 0.1s ease-out', // Smoother small movements
+            transition: isTransitioningRef.current ? 'none' : 'transform 0.1s ease-out', // Avoid transition during animations
           }}
         >
           {sections.map((section, index) => {
@@ -370,6 +392,8 @@ const CubePortfolio = () => {
                 style={{
                   transform: `rotateX(${-index * 90}deg) translateZ(50vh)`,
                   transformStyle: 'preserve-3d',
+                  // Better mobile performance by improving paint layer handling
+                  willChange: isActive ? 'transform, scroll-position' : 'transform',
                   pointerEvents: isActive ? 'auto' : 'none',
                 }}
               >
@@ -377,6 +401,9 @@ const CubePortfolio = () => {
                   className="absolute inset-0 overflow-auto scroll-container"
                   style={{
                     WebkitOverflowScrolling: 'touch',
+                    scrollBehavior: 'smooth',
+                    // Improved momentum scrolling on iOS
+                    overscrollBehavior: 'contain',
                   }}
                 >
                   {/* Simplified content containers with better spacing */}
@@ -422,6 +449,7 @@ const CubePortfolio = () => {
                           <button 
                             onClick={() => goToSection(1)} 
                             className="text-neutral-300 hover:text-neutral-600 transition-colors"
+                            aria-label="Scroll to Projects section"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="6 9 12 15 18 9"></polyline>
