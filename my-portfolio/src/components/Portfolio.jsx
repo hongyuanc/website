@@ -1,30 +1,52 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mail, Github, Linkedin, Download, FileText, ChevronUp, ChevronDown } from 'lucide-react';
 
-// Navigation Button Component for Mobile - simplified to just an arrow
+// Navigation Button Component for Mobile - Minimal design with iOS fixes
 const NavigationButton = ({ direction, onClick }) => {
+  const handleClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClick();
+  };
+
+  const handleTouchEnd = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClick();
+  };
+
   return (
-    <div
-      onClick={onClick}
+    <button
+      onClick={handleClick}
+      onTouchEnd={handleTouchEnd}
       className="flex items-center justify-center text-neutral-500 hover:text-black transition-colors cursor-pointer"
+      style={{ 
+        WebkitTapHighlightColor: 'transparent',
+        touchAction: 'manipulation',
+        background: 'none',
+        border: 'none',
+        padding: '8px'
+      }}
       aria-label={`Navigate ${direction}`}
     >
       {direction === 'up' ? <ChevronUp size={28} /> : <ChevronDown size={28} />}
-    </div>
+    </button>
   );
 };
 
 const CubeLogo = ({ rotation }) => {
-  // Simpler logo with better mobile detection
-  const isMobile = useRef(window.innerWidth <= 768);
+  // Better mobile detection using useState instead of useRef
+  const [isMobile, setIsMobile] = useState(false);
   
   useEffect(() => {
-    const handleResize = () => {
-      isMobile.current = window.innerWidth <= 768;
+    const checkMobile = () => {
+      const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
+      setIsMobile(isMobileDevice);
     };
     
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   return (
@@ -33,9 +55,8 @@ const CubeLogo = ({ rotation }) => {
         className="relative w-8 h-8 transition-transform duration-500"
         style={{
           transformStyle: 'preserve-3d',
-          // Fixed mobile rotation to match the page transition direction
-          transform: isMobile.current
-            ? `rotateX(${rotation}deg)` // Changed to rotateX to match section transitions
+          transform: isMobile
+            ? `rotateX(${rotation}deg)`
             : `rotateX(${rotation}deg) rotateY(45deg) rotateX(35deg)`,
         }}
       >
@@ -64,22 +85,24 @@ const CubeLogo = ({ rotation }) => {
 
 // New component for PDF Resume with responsive design
 const ResumeViewer = () => {
-  const resumePdfUrl = "/resume.pdf"; // Path to your resume PDF in public directory
-  const isMobile = useRef(window.innerWidth <= 768);
+  const resumePdfUrl = "/resume.pdf";
+  const [isMobile, setIsMobile] = useState(false);
   
   useEffect(() => {
-    const handleResize = () => {
-      isMobile.current = window.innerWidth <= 768;
+    const checkMobile = () => {
+      const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
+      setIsMobile(isMobileDevice);
     };
     
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
   
   return (
     <div className="w-full h-full flex flex-col">
-      {/* PDF actions bar - added extra margin-top for mobile */}
-      <div className={`flex justify-between items-center mb-4 ${isMobile.current ? 'mt-16' : ''}`}>
+      {/* PDF actions bar */}
+      <div className={`flex justify-between items-center mb-4 ${isMobile ? 'mt-16' : ''}`}>
         <h2 className="text-3xl font-light">Resume</h2>
         <div className="flex gap-3">
           <a 
@@ -103,14 +126,14 @@ const ResumeViewer = () => {
       </div>
       
       {/* PDF Viewer - only show on desktop */}
-      {!isMobile.current ? (
+      {!isMobile ? (
         <div className="flex-grow overflow-visible">
           <object
             data={resumePdfUrl}
             type="application/pdf"
             className="w-full"
             style={{ 
-              height: "calc(100vh - 180px)", // Adjusted height calculation
+              height: "calc(100vh - 180px)",
               display: "block"
             }}
           >
@@ -118,7 +141,6 @@ const ResumeViewer = () => {
           </object>
         </div>
       ) : (
-        // Mobile alternative message
         <div className="mt-8 text-center text-neutral-600 px-4 py-16 pb-32">
           <p>For the best experience viewing the resume, please use the View or Download buttons above.</p>
           <div className="h-96 mb-32"></div>
@@ -133,6 +155,7 @@ const CubePortfolio = () => {
   const [rotationDegree, setRotationDegree] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const sections = ['HOME', 'PROJECTS', 'RESUME', 'COURSEWORK'];
   const containerRef = useRef(null);
   const sectionRefs = useRef([]);
@@ -140,32 +163,45 @@ const CubePortfolio = () => {
   const lockScrollRef = useRef(false);
   const touchStartY = useRef(null);
   const touchStartTime = useRef(null);
-  const isMobile = useRef(window.innerWidth <= 768);
 
   useEffect(() => {
-    // Simplified loading
-    document.body.style.overflow = 'hidden';
-    setTimeout(() => setIsLoading(false), 600);
-    
-    // Apply the custom font to the entire document
-    document.body.classList.add('font-poppins');
-    
-    // Check for mobile
-    const handleResize = () => {
-      isMobile.current = window.innerWidth <= 768;
+    // Better mobile detection
+    const checkMobile = () => {
+      const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
+      setIsMobile(isMobileDevice);
     };
     
-    window.addEventListener('resize', handleResize);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
     
-    // For mobile devices, completely disable scrolling between sections
-    if (isMobile.current) {
-      document.body.style.overscrollBehavior = 'none';
+    // iOS-specific setup
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      // Prevent zoom on iOS
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+      }
+      
+      // Prevent bounce scrolling on iOS
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'hidden';
     }
     
+    setTimeout(() => setIsLoading(false), 600);
+    document.body.classList.add('font-poppins');
+    
     return () => {
+      window.removeEventListener('resize', checkMobile);
+      if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.height = '';
+      }
       document.body.style.overflow = 'unset';
-      document.body.style.overscrollBehavior = 'auto';
-      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -173,13 +209,11 @@ const CubePortfolio = () => {
   const smoothRotate = (targetRotation, onComplete) => {
     const startRotation = rotationDegree;
     const startTime = performance.now();
-    // Faster animation on mobile for better responsiveness
-    const duration = isMobile.current ? 450 : 600;
+    const duration = isMobile ? 450 : 600;
     
     const animate = (currentTime) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      // Improved easing for smoother animation
       const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
       const newRotation = startRotation + (targetRotation - startRotation) * eased;
       
@@ -197,14 +231,12 @@ const CubePortfolio = () => {
     requestAnimationFrame(animate);
   };
 
-  // Completely disable wheel event for mobile to prevent section scrolling
+  // Desktop wheel handling
   const handleWheel = (e) => {
-    if (isMobile.current) {
-      // On mobile, completely prevent wheel events from navigating between sections
-      return;
+    if (isMobile) {
+      return; // Completely disable wheel events on mobile
     }
     
-    // Keep desktop wheel behavior
     if (lockScrollRef.current || isTransitioningRef.current) {
       e.preventDefault();
       return;
@@ -230,25 +262,62 @@ const CubePortfolio = () => {
     }
   };
 
-  // Completely disable section swiping - touch only affects content scrolling
+  // Improved touch handling for iOS
   const handleTouchStart = (e) => {
-    // Only track touches for within-section scrolling
-    // Do not track for section navigation via swipes
-    if (e.target.closest('.nav-button')) {
-      return; // Don't track touch events on navigation buttons
+    if (!isMobile) return;
+    
+    // Don't handle if touching a navigation button
+    if (e.target.closest('.nav-button') || e.target.closest('button') || e.target.closest('a')) {
+      return;
     }
+    
+    touchStartY.current = e.touches[0].clientY;
+    touchStartTime.current = Date.now();
   };
 
   const handleTouchMove = (e) => {
-    // Only handle content scrolling, no section navigation
+    if (!isMobile) return;
+    // Allow normal scrolling within sections
   };
 
   const handleTouchEnd = (e) => {
-    // No section navigation via swipes
-    // All section navigation is now through the arrow buttons
+    if (!isMobile || !touchStartY.current) return;
+    
+    // Don't handle if touching a navigation button
+    if (e.target.closest('.nav-button') || e.target.closest('button') || e.target.closest('a')) {
+      touchStartY.current = null;
+      return;
+    }
+    
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchEndY - touchStartY.current;
+    const timeDelta = Date.now() - touchStartTime.current;
+    
+    // Require faster, more deliberate swipes
+    if (Math.abs(deltaY) > 80 && timeDelta < 300) {
+      const activeSection = sectionRefs.current[currentSection];
+      if (activeSection) {
+        const scrollContainer = activeSection.querySelector('.scroll-container');
+        if (scrollContainer) {
+          const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+          const isScrolledToTop = scrollTop <= 10;
+          const isScrolledToBottom = scrollHeight - clientHeight - scrollTop <= 10;
+          
+          if (deltaY > 0 && isScrolledToTop && currentSection > 0) {
+            e.preventDefault();
+            goToSection(currentSection - 1);
+          } else if (deltaY < 0 && isScrolledToBottom && currentSection < sections.length - 1) {
+            e.preventDefault();
+            goToSection(currentSection + 1);
+          }
+        }
+      }
+    }
+    
+    touchStartY.current = null;
   };
 
-  // Cleaner section navigation with improved mobile handling
+  // Enhanced section navigation
   const goToSection = (index) => {
     if (isTransitioningRef.current || lockScrollRef.current || index === currentSection || index < 0 || index >= sections.length) return;
 
@@ -259,8 +328,6 @@ const CubePortfolio = () => {
     setCurrentSection(index);
     
     smoothRotate(targetRotation);
-    
-    // Close mobile menu if open
     setMobileMenuOpen(false);
   };
 
@@ -276,7 +343,17 @@ const CubePortfolio = () => {
     <div
       ref={containerRef}
       className="h-screen overflow-hidden bg-white font-tech"
-      style={{ fontFamily: "'JetBrains Mono', monospace" }}
+      style={{ 
+        fontFamily: "'JetBrains Mono', monospace",
+        WebkitOverflowScrolling: 'touch',
+        ...(isMobile && {
+          position: 'fixed',
+          width: '100%',
+          height: '100%',
+          top: 0,
+          left: 0
+        })
+      }}
       onWheel={handleWheel}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
@@ -311,6 +388,7 @@ const CubePortfolio = () => {
           <button 
             className="md:hidden text-neutral-600"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            style={{ WebkitTapHighlightColor: 'transparent' }}
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {mobileMenuOpen ? (
@@ -336,6 +414,7 @@ const CubePortfolio = () => {
                 <button
                   key={section}
                   onClick={() => goToSection(index)}
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
                   className={`text-sm tracking-wider transition-colors text-left hover:text-black py-2 ${
                     currentSection === index ? 'text-black' : 'text-neutral-400'
                   }`}
@@ -361,7 +440,7 @@ const CubePortfolio = () => {
           style={{
             transformStyle: 'preserve-3d',
             transform: `translateZ(-50vh) rotateX(${rotationDegree}deg)`,
-            transition: isTransitioningRef.current ? 'none' : 'transform 0.1s ease-out', // Avoid transition during animations
+            transition: isTransitioningRef.current ? 'none' : 'transform 0.1s ease-out',
           }}
         >
           {sections.map((section, index) => {
@@ -377,17 +456,16 @@ const CubePortfolio = () => {
                 style={{
                   transform: `rotateX(${-index * 90}deg) translateZ(50vh)`,
                   transformStyle: 'preserve-3d',
-                  // Better mobile performance by improving paint layer handling
                   willChange: isActive ? 'transform, scroll-position' : 'transform',
                   pointerEvents: isActive ? 'auto' : 'none',
                 }}
               >
                 {/* Mobile Section Navigation Buttons - Only visible on mobile */}
-                {isActive && isMobile.current && (
+                {isActive && isMobile && (
                   <>
-                    {/* Up button - not shown on first section */}
+                    {/* Up button */}
                     {isPrevSectionAvailable && index !== 0 && (
-                      <div className="fixed top-20 inset-x-0 flex justify-center z-40 md:hidden nav-button animate-bounce">
+                      <div className="fixed top-20 inset-x-0 flex justify-center z-40 md:hidden nav-button">
                         <NavigationButton 
                           direction="up" 
                           onClick={() => goToSection(index - 1)}
@@ -395,9 +473,9 @@ const CubePortfolio = () => {
                       </div>
                     )}
                     
-                    {/* Down button - not shown on first or last section */}
+                    {/* Down button */}
                     {isNextSectionAvailable && index !== 0 && (
-                      <div className="fixed bottom-8 inset-x-0 flex justify-center z-40 md:hidden nav-button animate-bounce">
+                      <div className="fixed bottom-8 inset-x-0 flex justify-center z-40 md:hidden nav-button">
                         <NavigationButton 
                           direction="down" 
                           onClick={() => goToSection(index + 1)}
@@ -412,20 +490,18 @@ const CubePortfolio = () => {
                   style={{
                     WebkitOverflowScrolling: 'touch',
                     scrollBehavior: 'smooth',
-                    // Prevent scroll chaining and overscroll effects on mobile
                     overscrollBehavior: 'contain',
-                    // Prevent scrolling to next/previous sections on mobile
-                    ...(isMobile.current && {
-                      overscrollBehaviorY: 'none'
+                    ...(isMobile && {
+                      overscrollBehaviorY: 'contain'
                     })
                   }}
                 >
-                  {/* Simplified content containers with better spacing */}
+                  {/* Content containers */}
                   <div className="p-4 md:p-8 lg:p-16 max-w-4xl mx-auto">
-                    {/* HOME Section - Centered for all devices */}
+                    {/* HOME Section */}
                     {section === 'HOME' && (
-                      <div className="max-w-2xl mx-auto space-y-6 text-center" style={{ marginTop: isMobile.current ? '35vh' : '17.5rem' }}>
-                      <h1 className="text-3xl md:text-6xl font-light mb-6">Hong Yuan Cao</h1>
+                      <div className="max-w-2xl mx-auto space-y-6 text-center" style={{ marginTop: isMobile ? '35vh' : '17.5rem' }}>
+                        <h1 className="text-3xl md:text-6xl font-light mb-6">Hong Yuan Cao</h1>
                         <p className="text-lg md:text-xl text-neutral-600 mb-4">
                           CS, Econ Student at Boston University
                         </p>
@@ -460,15 +536,10 @@ const CubePortfolio = () => {
                         
                         {/* Visual indicator to scroll down */}
                         <div className="flex justify-center mt-12 animate-bounce">
-                          <button 
-                            onClick={() => goToSection(1)} 
-                            className="text-neutral-300 hover:text-neutral-600 transition-colors nav-button"
-                            aria-label="Scroll to Projects section"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                          </button>
+                          <NavigationButton
+                            direction="down"
+                            onClick={() => goToSection(1)}
+                          />
                         </div>
                       </div>
                     )}
@@ -479,6 +550,28 @@ const CubePortfolio = () => {
                         <h2 className="text-3xl font-light mb-12">Projects</h2>
                         <div className="space-y-10 md:space-y-16">
                           {/* Project cards with hover effects */}
+                          <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+                            <h3 className="text-xl md:text-2xl font-light mb-2">Athens</h3>
+                            <p className="text-neutral-500 mb-3 text-sm">FastAPI, React, TypeScript, OpenAI, Supabase, ChromaDB</p>
+                            <p className="text-neutral-600 mb-3">
+                              An AI-powered learning environment.
+                            </p>
+                            <a target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
+                              Still in development...
+                            </a>
+                          </div>
+
+                          <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+                            <h3 className="text-xl md:text-2xl font-light mb-2">Edge Detection Demo</h3>
+                            <p className="text-neutral-500 mb-3 text-sm">Python, OpenCV, Typescript, Electron</p>
+                            <p className="text-neutral-600 mb-3">
+                              Utilizes OpenCV to detect edges and idenitifies objects in live video feed. Demo for how cameras in AD operate.
+                            </p>
+                            <a href="https://github.com/hongyuanc?tab=repositories" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
+                              View Project →
+                            </a>
+                          </div>
+
                           <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
                             <h3 className="text-xl md:text-2xl font-light mb-2">Serverless Image Processing Pipeline</h3>
                             <p className="text-neutral-500 mb-3 text-sm">AWS S3, Lambda, CloudFront, DynamoDB, Terraform, React</p>
@@ -587,7 +680,7 @@ const CubePortfolio = () => {
 
                           {/* Spring 2023 */}
                           <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl font-light mb-3">Spring 2024</h3>
+                            <h3 className="text-xl font-light mb-3">Spring 2023</h3>
                             <ul className="space-y-1 text-neutral-600">
                               <li>EC202 Intermed Macro Economics</li>
                               <li>EC204 Empirical Economics II</li>
@@ -598,7 +691,7 @@ const CubePortfolio = () => {
 
                           {/* Fall 2022 */}
                           <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl font-light mb-3">Fall 2023</h3>
+                            <h3 className="text-xl font-light mb-3">Fall 2022</h3>
                             <ul className="space-y-1 text-neutral-600">
                               <li>EC201 Intermed Micro Economics</li>
                               <li>EC203 Empirical Economics I</li>
