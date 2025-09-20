@@ -156,7 +156,167 @@ const CubePortfolio = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const sections = ['HOME', 'PROJECTS', 'RESUME', 'COURSEWORK'];
+  const sections = ['HOME', 'RESUME', 'PROJECTS', 'COURSEWORK'];
+
+  // Shared content components to avoid duplication
+  const renderHomeContent = (isDesktop = false) => (
+    <div className={`max-w-2xl mx-auto space-y-6 text-center ${isDesktop ? '' : ''}`} style={{ marginTop: isDesktop ? (isMobile ? '35vh' : '17.5rem') : '0' }}>
+      <h1 className={`font-light mb-6 ${isDesktop ? 'text-3xl md:text-6xl' : 'text-4xl'}`}>Hong Yuan Cao</h1>
+      <p className={`text-neutral-600 mb-4 ${isDesktop ? 'text-lg md:text-xl' : 'text-lg'}`}>
+        CS, Econ Student at Boston University
+      </p>
+      <p className={`text-neutral-500 mb-8 ${isDesktop ? 'text-base md:text-lg' : 'text-base'}`}>
+        Interested in Software Engineering and Game Development
+      </p>
+      <div className="flex justify-center gap-6">
+        <a href="mailto:hongyc@bu.edu" className="text-neutral-600 hover:text-black transition-colors" aria-label="Email">
+          <Mail size={24} />
+        </a>
+        <a href="https://github.com/hongyuanc" target="_blank" className="text-neutral-600 hover:text-black transition-colors" aria-label="GitHub">
+          <Github size={24} />
+        </a>
+        <a href="https://www.linkedin.com/in/hong-yuan-cao/" target="_blank" className="text-neutral-600 hover:text-black transition-colors" aria-label="LinkedIn">
+          <Linkedin size={24} />
+        </a>
+      </div>
+      {isDesktop && (
+        <div className="flex justify-center mt-12 animate-bounce">
+          <NavigationButton direction="down" onClick={() => goToSection(1)} />
+        </div>
+      )}
+    </div>
+  );
+
+  const renderProjectsContent = () => (
+    <div className="max-w-3xl mx-auto mt-16 md:mt-20">
+      <h2 className="text-3xl font-light mb-12">Projects</h2>
+      <div className="space-y-10 md:space-y-16">
+        <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+          <h3 className="text-xl md:text-2xl font-light mb-2">Athens</h3>
+          <p className="text-neutral-500 mb-3 text-sm">FastAPI, React, TypeScript, OpenAI, Supabase, ChromaDB</p>
+          <p className="text-neutral-600 mb-3">An AI-powered learning environment.</p>
+          <a href="https://waitlist.athens-ai.tech" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
+            Join the waitlist →
+          </a>
+        </div>
+        <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+          <h3 className="text-xl md:text-2xl font-light mb-2">Edge Detection Demo</h3>
+          <p className="text-neutral-500 mb-3 text-sm">Python, OpenCV, Typescript, Electron</p>
+          <p className="text-neutral-600 mb-3">Utilizes OpenCV to detect edges and idenitifies objects in live video feed. Demo for how cameras in AD operate.</p>
+          <a href="https://github.com/hongyuanc?tab=repositories" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
+            View Project →
+          </a>
+        </div>
+        <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+          <h3 className="text-xl md:text-2xl font-light mb-2">Serverless Image Processing Pipeline</h3>
+          <p className="text-neutral-500 mb-3 text-sm">AWS S3, Lambda, CloudFront, DynamoDB, Terraform, React</p>
+          <p className="text-neutral-600 mb-3">A platform that utilizes cloud services to receive and process/resize uploaded images.</p>
+          <a href="https://github.com/hongyuanc?tab=repositories" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
+            View Project →
+          </a>
+        </div>
+        <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+          <h3 className="text-xl md:text-2xl font-light mb-2">WeTrack</h3>
+          <p className="text-neutral-500 mb-3 text-sm">Django, React Native, PostgreSQL, Android Studio</p>
+          <p className="text-neutral-600 mb-3">A mobile app that helps travelers and international students track expenses across multiple currencies.</p>
+          <a href="https://github.com/k4teseo/wetrack" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
+            View Project →
+          </a>
+        </div>
+        <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+          <h3 className="text-xl md:text-2xl font-light mb-2">FilmHive</h3>
+          <p className="text-neutral-500 mb-3 text-sm">Flask, Vue.js, Python, Javascript, PostgreSQL</p>
+          <p className="text-neutral-600 mb-3">A movie discovery platform that suggests films based on what you've already watched and enjoyed.</p>
+          <a href="https://github.com/hongyuanc/movie-recommendation" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
+            View Project →
+          </a>
+        </div>
+        <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+          <h3 className="text-xl md:text-2xl font-light mb-2">Large Language Model Development</h3>
+          <p className="text-neutral-500 mb-3 text-sm">Python, PyTorch</p>
+          <p className="text-neutral-600 mb-3">My attempt at understanding how language models like GPT actually work under the hood.</p>
+          <a href="https://github.com/hongyuanc/building-a-llm" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
+            View Project →
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderCourseworkContent = () => (
+    <div className="max-w-3xl mx-auto mt-16 md:mt-20">
+      <h2 className="text-3xl font-light mb-12">Coursework</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+          <h3 className="text-xl font-light mb-3">Fall 2025</h3>
+          <ul className="space-y-1 text-neutral-600">
+            <li>CS542 Machine Learning</li>
+            <li>CS440 Artificial Intelligence</li>
+            <li>CS320 Programming Languages</li>
+            <li>EC371 Environmental Economics</li>
+          </ul>
+        </div>
+        <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+          <h3 className="text-xl font-light mb-3">Spring 2025</h3>
+          <ul className="space-y-1 text-neutral-600">
+            <li>CS351 Distributed Systems</li>
+            <li>CS460 Databases</li>
+            <li>CS365 Foundation of Data Science</li>
+            <li>WR152 Writing Research & Inquiry</li>
+          </ul>
+        </div>
+        <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+          <h3 className="text-xl font-light mb-2">Fall 2024</h3>
+          <p className="text-neutral-500 mb-2 text-sm italic">Study abroad @ BU London</p>
+          <ul className="space-y-1 text-neutral-600">
+            <li>CS411 Software Engineering</li>
+            <li>CS330 Intro to Analysis of Algorithms</li>
+            <li>EC364 British Economic Performance</li>
+            <li>AH381 London Architecture & Urbanism</li>
+          </ul>
+        </div>
+        <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+          <h3 className="text-xl font-light mb-3">Spring 2024</h3>
+          <ul className="space-y-1 text-neutral-600">
+            <li>CS131 Combinatoric Structures</li>
+            <li>MA581 Probability</li>
+            <li>EC328 Urban and Regional Economics</li>
+            <li>CL101 The World of Greece</li>
+          </ul>
+        </div>
+        <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+          <h3 className="text-xl font-light mb-3">Fall 2023</h3>
+          <ul className="space-y-1 text-neutral-600">
+            <li>CS132 Geometric Algorithms</li>
+            <li>CS210 Computer Systems</li>
+            <li>EC332 Market Structure and Economic Performance</li>
+            <li>LJ112 Japanese 2</li>
+          </ul>
+        </div>
+        <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+          <h3 className="text-xl font-light mb-3">Spring 2023</h3>
+          <ul className="space-y-1 text-neutral-600">
+            <li>EC202 Intermed Macro Economics</li>
+            <li>EC204 Empirical Economics II</li>
+            <li>CS112 Intro to CS II</li>
+            <li>CG101 Modern Greek Lang Lit Culture</li>
+          </ul>
+        </div>
+        <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
+          <h3 className="text-xl font-light mb-3">Fall 2022</h3>
+          <ul className="space-y-1 text-neutral-600">
+            <li>EC201 Intermed Micro Economics</li>
+            <li>EC203 Empirical Economics I</li>
+            <li>CS111 Intro to CS I</li>
+            <li>WR120 Writing Seminar</li>
+          </ul>
+        </div>
+      </div>
+      <div className="mt-24 text-center text-neutral-500 text-sm">
+        © {new Date().getFullYear()} Hong Yuan Cao
+      </div>
+    </div>
+  );
   const containerRef = useRef(null);
   const sectionRefs = useRef([]);
   const isTransitioningRef = useRef(false);
@@ -174,20 +334,8 @@ const CubePortfolio = () => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     
-    // iOS-specific setup
-    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      // Prevent zoom on iOS
-      const viewport = document.querySelector('meta[name="viewport"]');
-      if (viewport) {
-        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-      }
-      
-      // Prevent bounce scrolling on iOS
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.height = '100%';
-      document.body.style.overflow = 'hidden';
-    } else {
+    // Only apply fixed body styles for desktop cube view
+    if (!checkMobile()) {
       document.body.style.overflow = 'hidden';
     }
     
@@ -196,11 +344,7 @@ const CubePortfolio = () => {
     
     return () => {
       window.removeEventListener('resize', checkMobile);
-      if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        document.body.style.position = '';
-        document.body.style.width = '';
-        document.body.style.height = '';
-      }
+      // Reset body styles on cleanup
       document.body.style.overflow = 'unset';
     };
   }, []);
@@ -339,20 +483,95 @@ const CubePortfolio = () => {
     );
   }
 
+  // Mobile scrollable layout - completely different from desktop
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-white font-tech" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+        {/* Mobile Navigation Bar */}
+        <nav className="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-neutral-100">
+          <div className="max-w-screen-xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+            </div>
+            
+            <button 
+              className="text-neutral-600"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              style={{ WebkitTapHighlightColor: 'transparent' }}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {mobileMenuOpen ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="3" y1="12" x2="21" y2="12"></line>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+              )}
+            </button>
+          </div>
+          
+          {/* Mobile Navigation Menu */}
+          {mobileMenuOpen && (
+            <div className="absolute top-full left-0 w-full bg-white border-b border-neutral-100 py-4 px-6 shadow-sm">
+              <div className="flex flex-col space-y-4">
+                {sections.map((section, index) => (
+                  <a
+                    key={section}
+                    href={`#${section.toLowerCase()}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    style={{ WebkitTapHighlightColor: 'transparent' }}
+                    className="text-sm tracking-wider transition-colors text-left hover:text-black py-2 text-neutral-400"
+                  >
+                    {section}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </nav>
+
+        {/* Mobile Content - All sections in a single scrollable container */}
+        <div className="pt-16">
+          <section id="home" className="min-h-screen flex items-center justify-center">
+            <div className="px-4">
+              {renderHomeContent(false)}
+            </div>
+          </section>
+
+          <section id="resume" className="min-h-screen py-8">
+            <div className="max-w-3xl mx-auto px-4">
+              <ResumeViewer />
+            </div>
+          </section>
+
+          <section id="projects" className="min-h-screen py-8">
+            <div className="px-4">
+              {renderProjectsContent()}
+            </div>
+          </section>
+
+          <section id="coursework" className="min-h-screen py-8">
+            <div className="px-4">
+              {renderCourseworkContent()}
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop cube layout (unchanged)
   return (
     <div
       ref={containerRef}
       className="h-screen overflow-hidden bg-white font-tech"
       style={{ 
         fontFamily: "'JetBrains Mono', monospace",
-        WebkitOverflowScrolling: 'touch',
-        ...(isMobile && {
-          position: 'fixed',
-          width: '100%',
-          height: '100%',
-          top: 0,
-          left: 0
-        })
+        WebkitOverflowScrolling: 'touch'
       }}
       onWheel={handleWheel}
       onTouchStart={handleTouchStart}
@@ -460,30 +679,6 @@ const CubePortfolio = () => {
                   pointerEvents: isActive ? 'auto' : 'none',
                 }}
               >
-                {/* Mobile Section Navigation Buttons - Only visible on mobile */}
-                {isActive && isMobile && (
-                  <>
-                    {/* Up button */}
-                    {isPrevSectionAvailable && index !== 0 && (
-                      <div className="fixed top-20 inset-x-0 flex justify-center z-40 md:hidden nav-button">
-                        <NavigationButton 
-                          direction="up" 
-                          onClick={() => goToSection(index - 1)}
-                        />
-                      </div>
-                    )}
-                    
-                    {/* Down button */}
-                    {isNextSectionAvailable && index !== 0 && (
-                      <div className="fixed bottom-8 inset-x-0 flex justify-center z-40 md:hidden nav-button">
-                        <NavigationButton 
-                          direction="down" 
-                          onClick={() => goToSection(index + 1)}
-                        />
-                      </div>
-                    )}
-                  </>
-                )}
 
                 <div
                   className="absolute inset-0 overflow-auto scroll-container"
@@ -499,125 +694,7 @@ const CubePortfolio = () => {
                   {/* Content containers */}
                   <div className="p-4 md:p-8 lg:p-16 max-w-4xl mx-auto">
                     {/* HOME Section */}
-                    {section === 'HOME' && (
-                      <div className="max-w-2xl mx-auto space-y-6 text-center" style={{ marginTop: isMobile ? '35vh' : '17.5rem' }}>
-                        <h1 className="text-3xl md:text-6xl font-light mb-6">Hong Yuan Cao</h1>
-                        <p className="text-lg md:text-xl text-neutral-600 mb-4">
-                          CS, Econ Student at Boston University
-                        </p>
-                        <p className="text-base md:text-lg text-neutral-500 mb-8">
-                          Interested in Software Engineering and Game Development
-                        </p>
-                        <div className="flex justify-center gap-6">
-                          <a
-                            href="mailto:hongyc@bu.edu"
-                            className="text-neutral-600 hover:text-black transition-colors"
-                            aria-label="Email"
-                          >
-                            <Mail size={24} />
-                          </a>
-                          <a
-                            href="https://github.com/hongyuanc"
-                            target="_blank"
-                            className="text-neutral-600 hover:text-black transition-colors"
-                            aria-label="GitHub"
-                          >
-                            <Github size={24} />
-                          </a>
-                          <a
-                            href="https://www.linkedin.com/in/hong-yuan-cao/"
-                            target="_blank"
-                            className="text-neutral-600 hover:text-black transition-colors"
-                            aria-label="LinkedIn"
-                          >
-                            <Linkedin size={24} />
-                          </a>
-                        </div>
-                        
-                        {/* Visual indicator to scroll down */}
-                        <div className="flex justify-center mt-12 animate-bounce">
-                          <NavigationButton
-                            direction="down"
-                            onClick={() => goToSection(1)}
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* PROJECTS Section - Cleaner cards with hover effects */}
-                    {section === 'PROJECTS' && (
-                      <div className="max-w-3xl mx-auto mt-16 md:mt-20">
-                        <h2 className="text-3xl font-light mb-12">Projects</h2>
-                        <div className="space-y-10 md:space-y-16">
-                          {/* Project cards with hover effects */}
-                          <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl md:text-2xl font-light mb-2">Athens</h3>
-                            <p className="text-neutral-500 mb-3 text-sm">FastAPI, React, TypeScript, OpenAI, Supabase, ChromaDB</p>
-                            <p className="text-neutral-600 mb-3">
-                              An AI-powered learning environment.
-                            </p>
-                            <a target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
-                              Still in development...
-                            </a>
-                          </div>
-
-                          <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl md:text-2xl font-light mb-2">Edge Detection Demo</h3>
-                            <p className="text-neutral-500 mb-3 text-sm">Python, OpenCV, Typescript, Electron</p>
-                            <p className="text-neutral-600 mb-3">
-                              Utilizes OpenCV to detect edges and idenitifies objects in live video feed. Demo for how cameras in AD operate.
-                            </p>
-                            <a href="https://github.com/hongyuanc?tab=repositories" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
-                              View Project →
-                            </a>
-                          </div>
-
-                          <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl md:text-2xl font-light mb-2">Serverless Image Processing Pipeline</h3>
-                            <p className="text-neutral-500 mb-3 text-sm">AWS S3, Lambda, CloudFront, DynamoDB, Terraform, React</p>
-                            <p className="text-neutral-600 mb-3">
-                              A platform that utilizes cloud services to receive and process/resize uploaded images.
-                            </p>
-                            <a href="https://github.com/hongyuanc?tab=repositories" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
-                              View Project →
-                            </a>
-                          </div>
-                          
-                          <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl md:text-2xl font-light mb-2">WeTrack</h3>
-                            <p className="text-neutral-500 mb-3 text-sm">Django, React Native, PostgreSQL, Android Studio</p>
-                            <p className="text-neutral-600 mb-3">
-                              A mobile app that helps travelers and international students track expenses across multiple currencies.
-                            </p>
-                            <a href="https://github.com/k4teseo/wetrack" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
-                              View Project →
-                            </a>
-                          </div>
-
-                          <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl md:text-2xl font-light mb-2">FilmHive</h3>
-                            <p className="text-neutral-500 mb-3 text-sm">Flask, Vue.js, Python, Javascript, PostgreSQL</p>
-                            <p className="text-neutral-600 mb-3">
-                              A movie discovery platform that suggests films based on what you've already watched and enjoyed.
-                            </p>
-                            <a href="https://github.com/hongyuanc/movie-recommendation" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
-                              View Project →
-                            </a>
-                          </div>
-
-                          <div className="group hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl md:text-2xl font-light mb-2">Large Language Model Development</h3>
-                            <p className="text-neutral-500 mb-3 text-sm">Python, PyTorch</p>
-                            <p className="text-neutral-600 mb-3">
-                              My attempt at understanding how language models like GPT actually work under the hood. 
-                            </p>
-                            <a href="https://github.com/hongyuanc/building-a-llm" target="_blank" className="inline-block text-neutral-400 group-hover:text-black transition-colors">
-                              View Project →
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                    {section === 'HOME' && renderHomeContent(true)}
 
                     {section === 'RESUME' && (
                       <div className="w-full h-full mt-16 md:mt-20">
@@ -628,84 +705,11 @@ const CubePortfolio = () => {
                       </div>
                     )}
 
-                    {/* COURSEWORK Section - Clean grid layout */}
-                    {section === 'COURSEWORK' && (
-                      <div className="max-w-3xl mx-auto mt-16 md:mt-20">
-                        <h2 className="text-3xl font-light mb-12">Coursework</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                          {/* Spring 2025 */}
-                          <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl font-light mb-3">Spring 2025</h3>
-                            <ul className="space-y-1 text-neutral-600">
-                              <li>CS351 Distributed Systems</li>
-                              <li>CS460 Databases</li>
-                              <li>CS365 Foundation of Data Science</li>
-                              <li>WR152 Writing Research & Inquiry</li>
-                            </ul>
-                          </div>
+                    {/* PROJECTS Section */}
+                    {section === 'PROJECTS' && renderProjectsContent()}
 
-                          {/* Fall 2024 */}
-                          <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl font-light mb-2">Fall 2024</h3>
-                            <p className="text-neutral-500 mb-2 text-sm italic">Study abroad @ BU London</p>
-                            <ul className="space-y-1 text-neutral-600">
-                              <li>CS411 Software Engineering</li>
-                              <li>CS330 Intro to Analysis of Algorithms</li>
-                              <li>EC364 British Economic Performance</li>
-                              <li>AH381 London Architecture & Urbanism</li>
-                            </ul>
-                          </div>
-
-                          {/* Spring 2024 */}
-                          <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl font-light mb-3">Spring 2024</h3>
-                            <ul className="space-y-1 text-neutral-600">
-                              <li>CS131 Combinatoric Structures</li>
-                              <li>MA581 Probability</li>
-                              <li>EC328 Urban and Regional Economics</li>
-                              <li>CL101 The World of Greece</li>
-                            </ul>
-                          </div>
-
-                          {/* Fall 2023 */}
-                          <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl font-light mb-3">Fall 2023</h3>
-                            <ul className="space-y-1 text-neutral-600">
-                              <li>CS132 Geometric Algorithms</li>
-                              <li>CS210 Computer Systems</li>
-                              <li>EC332 Market Structure and Economic Performance</li>
-                              <li>LJ112 Japanese 2</li>
-                            </ul>
-                          </div>
-
-                          {/* Spring 2023 */}
-                          <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl font-light mb-3">Spring 2023</h3>
-                            <ul className="space-y-1 text-neutral-600">
-                              <li>EC202 Intermed Macro Economics</li>
-                              <li>EC204 Empirical Economics II</li>
-                              <li>CS112 Intro to CS II</li>
-                              <li>CG101 Modern Greek Lang Lit Culture</li>
-                            </ul>
-                          </div>
-
-                          {/* Fall 2022 */}
-                          <div className="hover:bg-neutral-50 transition-all duration-300 p-4 rounded-lg -mx-4">
-                            <h3 className="text-xl font-light mb-3">Fall 2022</h3>
-                            <ul className="space-y-1 text-neutral-600">
-                              <li>EC201 Intermed Micro Economics</li>
-                              <li>EC203 Empirical Economics I</li>
-                              <li>CS111 Intro to CS I</li>
-                              <li>WR120 Writing Seminar</li>
-                            </ul>
-                          </div>
-                        </div>
-
-                        <div className="mt-24 text-center text-neutral-500 text-sm">
-                          © {new Date().getFullYear()} Hong Yuan Cao
-                        </div>
-                      </div>
-                    )}
+                    {/* COURSEWORK Section */}
+                    {section === 'COURSEWORK' && renderCourseworkContent()}
                   </div>
                 </div>
               </div>
