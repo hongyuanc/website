@@ -103,7 +103,7 @@ const ResumeViewer = () => {
     <div className="w-full h-full flex flex-col">
       {/* PDF actions bar */}
       <div className={`flex justify-between items-center mb-4 ${isMobile ? 'mt-16' : ''}`}>
-        <h2 className="text-3xl font-light">Resume</h2>
+        <h2 className="text-3xl font-light">Professional Resume</h2>
         <div className="flex gap-3">
           <a 
             href={resumePdfUrl} 
