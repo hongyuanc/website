@@ -8,6 +8,8 @@ html, body, #root {
   height: 100%;
   width: 100%;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
@@ -18,4 +20,21 @@ html, body, #root {
 
 * {
   box-sizing: border-box;
+}
+
+/* Brutalist utility classes */
+@layer utilities {
+  .brutalist-grid-bg {
+    background-image:
+      repeating-linear-gradient(0deg, #000 0px, #000 1px, transparent 1px, transparent 20px),
+      repeating-linear-gradient(90deg, #000 0px, #000 1px, transparent 1px, transparent 20px);
+    background-size: 20px 20px;
+    opacity: 0.05;
+  }
+
+  .text-brutalist {
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
 }
