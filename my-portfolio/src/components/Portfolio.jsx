@@ -170,6 +170,13 @@ const CubePortfolio = () => {
       <div className="space-y-8">
         {[
           {
+            title: "VectorDB",
+            tech: "Cython, FastAPI, Docker",
+            desc: "VectorDB with HNSW indexing built from scratch.",
+            link: "https://github.com/hongyuanc/vector-db",
+            label: "View Project →"
+          },
+          {
             title: "Athens",
             tech: "FastAPI, React, TypeScript, OpenAI, Supabase, ChromaDB",
             desc: "An AI-powered learning environment.",
