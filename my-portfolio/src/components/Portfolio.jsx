@@ -109,7 +109,9 @@ const CubePortfolio = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isSafariDesktop, setIsSafariDesktop] = useState(false);
   const sections = ['HOME', 'RESUME', 'PROJECTS', 'COURSEWORK'];
+  const useLinearLayout = isMobile || isSafariDesktop;
 
   // Shared content components to avoid duplication
   const renderHomeContent = (isDesktop = false) => (
@@ -327,16 +329,26 @@ const CubePortfolio = () => {
   useEffect(() => {
     // Better mobile detection
     const checkMobile = () => {
-      const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
+      const userAgent = navigator.userAgent;
+      const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(userAgent) || window.innerWidth <= 768;
+      const isWebKit = /AppleWebKit/i.test(userAgent);
+      const isSafari = /Safari/i.test(userAgent);
+      const isChromeFamily = /Chrome|CriOS|Edg|OPR|Brave/i.test(userAgent);
+      const isDesktopSafari = isWebKit && isSafari && !isChromeFamily && !isMobileDevice;
+
       setIsMobile(isMobileDevice);
+      setIsSafariDesktop(isDesktopSafari);
+      return { isMobileDevice, isDesktopSafari };
     };
 
-    checkMobile();
+    const { isMobileDevice: initialIsMobile, isDesktopSafari: initialIsSafariDesktop } = checkMobile();
     window.addEventListener('resize', checkMobile);
 
     // Only apply fixed body styles for desktop cube view
-    if (!checkMobile()) {
+    if (!initialIsMobile && !initialIsSafariDesktop) {
       document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
     }
 
     setTimeout(() => setIsLoading(false), 600);
@@ -348,6 +360,10 @@ const CubePortfolio = () => {
       document.body.style.overflow = 'unset';
     };
   }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = useLinearLayout ? 'auto' : 'hidden';
+  }, [useLinearLayout]);
 
   // Smoother animation with better performance
   const smoothRotate = (targetRotation, onComplete) => {
@@ -377,7 +393,7 @@ const CubePortfolio = () => {
 
   // Desktop wheel handling
   const handleWheel = (e) => {
-    if (isMobile) {
+    if (useLinearLayout) {
       return; // Completely disable wheel events on mobile
     }
     
@@ -408,7 +424,7 @@ const CubePortfolio = () => {
 
   // Improved touch handling for iOS
   const handleTouchStart = (e) => {
-    if (!isMobile) return;
+    if (!useLinearLayout) return;
     
     // Don't handle if touching a navigation button
     if (e.target.closest('.nav-button') || e.target.closest('button') || e.target.closest('a')) {
@@ -420,12 +436,12 @@ const CubePortfolio = () => {
   };
 
   const handleTouchMove = (e) => {
-    if (!isMobile) return;
+    if (!useLinearLayout) return;
     // Allow normal scrolling within sections
   };
 
   const handleTouchEnd = (e) => {
-    if (!isMobile || !touchStartY.current) return;
+    if (!useLinearLayout || !touchStartY.current) return;
     
     // Don't handle if touching a navigation button
     if (e.target.closest('.nav-button') || e.target.closest('button') || e.target.closest('a')) {
@@ -485,8 +501,8 @@ const CubePortfolio = () => {
     );
   }
 
-  // Mobile scrollable layout - completely different from desktop
-  if (isMobile) {
+  // Linear scroll layout used for mobile and Safari desktop fallback
+  if (useLinearLayout) {
     return (
       <div className="min-h-screen bg-white font-tech" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
         {/* Mobile Navigation - Minimal Brutalist */}
@@ -569,16 +585,17 @@ const CubePortfolio = () => {
 
   // Desktop cube layout
   return (
-    <div
-      ref={containerRef}
-      className="h-screen overflow-hidden bg-white font-tech"
-      style={{
-        fontFamily: "'JetBrains Mono', monospace",
-        WebkitOverflowScrolling: 'touch'
-      }}
-      onWheel={handleWheel}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
+      <div
+        ref={containerRef}
+        className="h-screen overflow-hidden bg-white font-tech"
+        style={{
+          fontFamily: "'JetBrains Mono', monospace",
+          WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-y'
+        }}
+        onWheel={handleWheel}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {/* Minimal Brutalist Navigation - Expandable on Hover */}
@@ -660,6 +677,7 @@ const CubePortfolio = () => {
                     WebkitOverflowScrolling: 'touch',
                     scrollBehavior: 'smooth',
                     overscrollBehavior: 'contain',
+                    touchAction: 'pan-y',
                     ...(isMobile && {
                       overscrollBehaviorY: 'contain'
                     })
