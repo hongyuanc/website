@@ -1,104 +1,38 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Mail, Github, Linkedin, Download, FileText, ChevronUp, ChevronDown } from 'lucide-react';
-
-// Navigation Button Component for Mobile - Brutalist design
-const NavigationButton = ({ direction, onClick }) => {
-  const handleClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onClick();
-  };
-
-  const handleTouchEnd = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onClick();
-  };
-
-  return (
-    <button
-      onClick={handleClick}
-      onTouchEnd={handleTouchEnd}
-      className="flex items-center justify-center text-black hover:bg-black hover:text-white border-4 border-black cursor-pointer"
-      style={{
-        WebkitTapHighlightColor: 'transparent',
-        touchAction: 'manipulation',
-        padding: '12px',
-        transition: 'none'
-      }}
-      aria-label={`Navigate ${direction}`}
-    >
-      {direction === 'up' ? <ChevronUp size={32} strokeWidth={3} /> : <ChevronDown size={32} strokeWidth={3} />}
-    </button>
-  );
-};
-
+import { useState, useEffect, useRef } from 'react';
+import { Mail, Github, Linkedin, Download, FileText, ChevronDown, Home, Code2, BookOpen } from 'lucide-react';
 
 // New component for PDF Resume with responsive design
 const ResumeViewer = () => {
   const resumePdfUrl = "/resume.pdf";
-  const [isMobile, setIsMobile] = useState(false);
-  
-  useEffect(() => {
-    const checkMobile = () => {
-      const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
-      setIsMobile(isMobileDevice);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-  
+
   return (
-    <div className="w-full h-full flex flex-col">
-      {/* PDF actions bar */}
-      <div className={`flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6 ${isMobile ? 'mt-16' : ''}`}>
-        <h2 className="text-3xl md:text-4xl font-black uppercase">Resume</h2>
+    <div className="content-column h-full flex flex-col">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
+        <h2 className="section-title text-[42px] md:text-[58px]">Resume</h2>
         <div className="flex gap-3 md:gap-4 flex-wrap">
           <a
             href={resumePdfUrl}
             target="_blank"
-            className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-3 border-4 border-black bg-white hover:bg-black hover:text-white font-bold uppercase text-sm md:text-base"
-            style={{ transition: 'none' }}
+            className="quiet-button flex items-center gap-2 px-4 py-2 text-sm md:text-base"
             rel="noopener noreferrer"
           >
-            <FileText size={18} strokeWidth={3} />
+            <FileText size={18} strokeWidth={2} />
             <span>View</span>
           </a>
           <a
             href={resumePdfUrl}
             download="Hong_Yuan_Cao_Resume.pdf"
-            className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-3 border-4 border-black bg-black text-white hover:bg-white hover:text-black font-bold uppercase shadow-brutalist text-sm md:text-base"
-            style={{ transition: 'none' }}
+            className="quiet-button quiet-button-primary flex items-center gap-2 px-4 py-2 text-sm md:text-base"
           >
-            <Download size={18} strokeWidth={3} />
+            <Download size={18} strokeWidth={2} />
             <span>Download</span>
           </a>
         </div>
       </div>
-      
-      {/* PDF Viewer - only show on desktop */}
-      {!isMobile ? (
-        <div className="flex-grow overflow-visible">
-          <object
-            data={resumePdfUrl}
-            type="application/pdf"
-            className="w-full"
-            style={{ 
-              height: "calc(100vh - 180px)",
-              display: "block"
-            }}
-          >
-            <p>It appears your browser doesn't support embedded PDFs. You can <a href={resumePdfUrl}>download the PDF</a> instead.</p>
-          </object>
-        </div>
-      ) : (
-        <div className="mt-8 border-4 border-black p-8 bg-white">
-          <p className="font-bold text-black text-center">Use the View or Download buttons above to access the resume.</p>
-          <div className="h-96 mb-32"></div>
-        </div>
-      )}
+
+      <div className="resume-frame">
+        <img src="/resume-page-1.png" alt="Resume preview" />
+      </div>
     </div>
   );
 };
@@ -112,65 +46,72 @@ const CubePortfolio = () => {
   const [isSafariDesktop, setIsSafariDesktop] = useState(false);
   const sections = ['HOME', 'RESUME', 'PROJECTS', 'COURSEWORK'];
   const useLinearLayout = isMobile || isSafariDesktop;
+  const aboutParagraphs = [
+    "Recent BU graduate in Computer Science and Economics. Previously worked on autonomous-driving perception systems, including low-power perception architecture, radar/lidar drivers, and point-cloud processing.",
+    "I like to redesign this site from time to time, knowing full well that probably no one will ever see the changes."
+  ];
 
   // Shared content components to avoid duplication
-  const renderHomeContent = (isDesktop = false) => (
-    <div className={`max-w-3xl mx-auto space-y-8 text-center relative z-10`}>
-      <div className="border-4 border-black p-8 bg-white shadow-brutalist-lg transform transition-transform hover:-translate-y-1 hover:translate-x-1 duration-0">
-        <h1 className={`font-black mb-6 uppercase tracking-tight ${isDesktop ? 'text-5xl md:text-7xl' : 'text-5xl'}`}>
+  const renderHomeContent = (isDesktop = false, isLinearDesktop = false) => (
+    <div className={`content-column text-center relative z-10 ${
+      isDesktop ? 'home-content-desktop' : isLinearDesktop ? 'home-content-linear-desktop' : 'home-content-linear'
+    }`}>
+      <div className="px-2 md:px-6">
+        <h1 className={`section-title home-name ${isDesktop ? 'text-[58px] md:text-[72px]' : isLinearDesktop ? 'text-[58px] md:text-[64px]' : 'text-[42px]'}`}>
           Hong Yuan Cao
         </h1>
-        <div className="border-t-4 border-black my-6"></div>
-        <p className={`text-black mb-4 font-bold ${isDesktop ? 'text-xl md:text-2xl' : 'text-xl'}`}>
-          CS, ECON STUDENT @ BOSTON UNIVERSITY
+        <div className="home-divider mx-auto w-20" style={{ height: '0.5px', background: 'var(--border-strong)' }}></div>
+        <p className={`section-title home-tagline ${isDesktop || isLinearDesktop ? 'text-[28px]' : 'text-[24px]'}`}>
+          Incoming MEng CS @ Cornell Tech
         </p>
-        <p className={`text-black mb-8 font-mono ${isDesktop ? 'text-base md:text-lg' : 'text-base'}`}>
-          Interested in Software Engineering and Game Development
-        </p>
+        <div className={`about-copy hero-copy mx-auto ${isDesktop || isLinearDesktop ? 'about-copy-desktop' : 'about-copy-linear'}`}>
+          {aboutParagraphs.map((paragraph, index) => (
+            <p key={paragraph} className={index === 1 ? 'about-aside' : undefined}>{paragraph}</p>
+          ))}
+        </div>
       </div>
-      <div className="flex justify-center gap-6">
+      <div className="home-socials flex justify-center gap-4">
         <a
-          href="mailto:hongyc@bu.edu"
-          className="border-4 border-black p-4 bg-white hover:bg-black hover:text-white group relative overflow-hidden"
-          style={{ transition: 'none' }}
+          href="mailto:hc2343@cornell.edu"
+          className="icon-button p-3.5"
           aria-label="Email"
         >
-          <div className="relative z-10"><Mail size={28} strokeWidth={2.5} /></div>
+          <Mail size={22} strokeWidth={1.8} />
         </a>
         <a
           href="https://github.com/hongyuanc"
           target="_blank"
-          className="border-4 border-black p-4 bg-white hover:bg-black hover:text-white"
-          style={{ transition: 'none' }}
+          className="icon-button p-3.5"
           aria-label="GitHub"
         >
-          <Github size={28} strokeWidth={2.5} />
+          <Github size={22} strokeWidth={1.8} />
         </a>
         <a
           href="https://www.linkedin.com/in/hong-yuan-cao/"
           target="_blank"
-          className="border-4 border-black p-4 bg-white hover:bg-black hover:text-white"
-          style={{ transition: 'none' }}
+          className="icon-button p-3.5"
           aria-label="LinkedIn"
         >
-          <Linkedin size={28} strokeWidth={2.5} />
+          <Linkedin size={22} strokeWidth={1.8} />
         </a>
       </div>
-      {isDesktop && (
-        <div className="flex justify-center mt-12 animate-bounce">
-          <ChevronDown size={32} strokeWidth={3} className="text-black" />
-        </div>
-      )}
     </div>
   );
 
-  const renderProjectsContent = () => (
-    <div className="max-w-4xl mx-auto mt-16 md:mt-20">
-      <div className="border-4 border-black p-6 mb-12 shadow-brutalist bg-white">
-        <h2 className="text-4xl md:text-5xl font-black uppercase">Projects</h2>
+  const renderProjectsContent = (compact = false) => (
+    <div className={`content-column ${compact ? 'mt-6' : 'mt-20 md:mt-24'}`}>
+      <div className="section-heading">
+        <h2 className="section-title text-[42px] md:text-[58px]">Projects</h2>
       </div>
-      <div className="space-y-8">
+      <div className="space-y-5">
         {[
+          {
+            title: "Work-Stealing Task Runtime",
+            tech: "C++20, Multithreading, Lock-Free, Linux",
+            desc: "A C++20 work-stealing scheduler.",
+            link: "https://github.com/hongyuanc?tab=repositories",
+            label: "View Project →"
+          },
           {
             title: "VectorDB",
             tech: "Cython, FastAPI, Docker",
@@ -182,8 +123,8 @@ const CubePortfolio = () => {
             title: "Athens",
             tech: "FastAPI, React, TypeScript, OpenAI, Supabase, ChromaDB",
             desc: "An AI-powered learning environment.",
-            link: "https://waitlist.athens-ai.tech",
-            label: "Join Waitlist →"
+            link: "https://athenslabs.ai",
+            label: "View Project →"
           },
           {
             title: "Edge Detection Demo",
@@ -221,11 +162,11 @@ const CubePortfolio = () => {
             label: "View Project →"
           }
         ].map((project, i) => (
-          <div key={i} className="group border-4 border-black p-6 bg-white hover:bg-black hover:text-white shadow-brutalist" style={{ transition: 'none' }}>
-            <h3 className="text-2xl md:text-3xl font-black mb-3 uppercase">{project.title}</h3>
-            <p className="mb-3 text-sm font-mono opacity-80">{project.tech}</p>
-            <p className="mb-4 font-bold">{project.desc}</p>
-            <a href={project.link} target="_blank" className="inline-block border-2 border-current px-4 py-2 font-bold uppercase text-sm hover:bg-white hover:text-black group-hover:border-white" style={{ transition: 'none' }}>
+          <div key={i} className="project-card group p-6 md:p-7">
+            <h3 className="project-title text-[30px] mb-3">{project.title}</h3>
+            <p className="metadata mb-3 text-xs md:text-sm">{project.tech}</p>
+            <p className="hero-copy mb-5">{project.desc}</p>
+            <a href={project.link} target="_blank" className="project-link inline-block text-sm">
               {project.label}
             </a>
           </div>
@@ -234,88 +175,88 @@ const CubePortfolio = () => {
     </div>
   );
 
-  const renderCourseworkContent = () => (
-    <div className="max-w-4xl mx-auto mt-16 md:mt-20">
-      <div className="border-4 border-black p-6 mb-12 shadow-brutalist bg-white">
-        <h2 className="text-4xl md:text-5xl font-black uppercase">Coursework</h2>
+  const renderCourseworkContent = (compact = false) => (
+    <div className={`content-column ${compact ? 'mt-6' : 'mt-20 md:mt-24'}`}>
+      <div className="section-heading">
+        <h2 className="section-title text-[42px] md:text-[58px]">Coursework</h2>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="border-4 border-black p-5 bg-white hover:bg-black hover:text-white" style={{ transition: 'none' }}>
-          <h3 className="text-xl font-black mb-4 uppercase border-b-2 border-current pb-2">Spring 2026</h3>
-          <ul className="space-y-2 font-mono text-sm">
-            <li className="font-black">• CS585 Image and Video Computing</li>
-            <li className="font-black">• CS528 Cloud Computing</li>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="course-card p-5">
+          <h3 className="course-title text-[24px] mb-4 pb-2">Spring 2026</h3>
+          <ul className="course-list space-y-2 text-sm">
+            <li className="font-medium">• CS585 Image and Video Computing</li>
+            <li className="font-medium">• CS528 Cloud Computing</li>
             <li>• EC406 Applied Econometrics</li>
             <li>• WR415 Public Writing</li>
           </ul>
         </div>
-        <div className="border-4 border-black p-5 bg-white hover:bg-black hover:text-white" style={{ transition: 'none' }}>
-          <h3 className="text-xl font-black mb-4 uppercase border-b-2 border-current pb-2">Fall 2025</h3>
-          <ul className="space-y-2 font-mono text-sm">
-            <li className="font-black">• CS542 Machine Learning</li>
-            <li className="font-black">• CS440 Artificial Intelligence</li>
-            <li className="font-black">• CS320 Programming Languages</li>
+        <div className="course-card p-5">
+          <h3 className="course-title text-[24px] mb-4 pb-2">Fall 2025</h3>
+          <ul className="course-list space-y-2 text-sm">
+            <li className="font-medium">• CS542 Machine Learning</li>
+            <li className="font-medium">• CS440 Artificial Intelligence</li>
+            <li className="font-medium">• CS320 Programming Languages</li>
             <li>• EC371 Environmental Economics</li>
           </ul>
         </div>
-        <div className="border-4 border-black p-5 bg-white hover:bg-black hover:text-white" style={{ transition: 'none' }}>
-          <h3 className="text-xl font-black mb-4 uppercase border-b-2 border-current pb-2">Spring 2025</h3>
-          <ul className="space-y-2 font-mono text-sm">
-            <li className="font-black">• CS351 Distributed Systems</li>
-            <li className="font-black">• CS460 Databases</li>
-            <li className="font-black">• CS365 Foundation of Data Science</li>
+        <div className="course-card p-5">
+          <h3 className="course-title text-[24px] mb-4 pb-2">Spring 2025</h3>
+          <ul className="course-list space-y-2 text-sm">
+            <li className="font-medium">• CS351 Distributed Systems</li>
+            <li className="font-medium">• CS460 Databases</li>
+            <li className="font-medium">• CS365 Foundation of Data Science</li>
             <li>• WR152 Writing Research & Inquiry</li>
           </ul>
         </div>
-        <div className="border-4 border-black p-5 bg-white hover:bg-black hover:text-white" style={{ transition: 'none' }}>
-          <h3 className="text-xl font-black mb-2 uppercase border-b-2 border-current pb-2">Fall 2024</h3>
-          <p className="mb-4 text-xs font-bold uppercase tracking-wide opacity-80">@ BU London</p>
-          <ul className="space-y-2 font-mono text-sm">
-            <li className="font-black">• CS411 Software Engineering</li>
-            <li className="font-black">• CS330 Algorithms</li>
+        <div className="course-card p-5">
+          <h3 className="course-title text-[24px] mb-2 pb-2">Fall 2024</h3>
+          <p className="metadata mb-4 text-xs">BU London</p>
+          <ul className="course-list space-y-2 text-sm">
+            <li className="font-medium">• CS411 Software Engineering</li>
+            <li className="font-medium">• CS330 Algorithms</li>
             <li>• EC364 British Economics</li>
             <li>• AH381 London Architecture</li>
           </ul>
         </div>
-        <div className="border-4 border-black p-5 bg-white hover:bg-black hover:text-white" style={{ transition: 'none' }}>
-          <h3 className="text-xl font-black mb-4 uppercase border-b-2 border-current pb-2">Spring 2024</h3>
-          <ul className="space-y-2 font-mono text-sm">
-            <li className="font-black">• CS131 Combinatoric Structures</li>
-            <li className="font-black">• MA581 Probability</li>
+        <div className="course-card p-5">
+          <h3 className="course-title text-[24px] mb-4 pb-2">Spring 2024</h3>
+          <ul className="course-list space-y-2 text-sm">
+            <li className="font-medium">• CS131 Combinatoric Structures</li>
+            <li className="font-medium">• MA581 Probability</li>
             <li>• EC328 Urban Economics</li>
             <li>• CL101 The World of Greece</li>
           </ul>
         </div>
-        <div className="border-4 border-black p-5 bg-white hover:bg-black hover:text-white" style={{ transition: 'none' }}>
-          <h3 className="text-xl font-black mb-4 uppercase border-b-2 border-current pb-2">Fall 2023</h3>
-          <ul className="space-y-2 font-mono text-sm">
-            <li className="font-black">• CS132 Geometric Algorithms</li>
-            <li className="font-black">• CS210 Computer Systems</li>
+        <div className="course-card p-5">
+          <h3 className="course-title text-[24px] mb-4 pb-2">Fall 2023</h3>
+          <ul className="course-list space-y-2 text-sm">
+            <li className="font-medium">• CS132 Geometric Algorithms</li>
+            <li className="font-medium">• CS210 Computer Systems</li>
             <li>• EC332 Market Structure</li>
             <li>• LJ112 Japanese 2</li>
           </ul>
         </div>
-        <div className="border-4 border-black p-5 bg-white hover:bg-black hover:text-white" style={{ transition: 'none' }}>
-          <h3 className="text-xl font-black mb-4 uppercase border-b-2 border-current pb-2">Spring 2023</h3>
-          <ul className="space-y-2 font-mono text-sm">
+        <div className="course-card p-5">
+          <h3 className="course-title text-[24px] mb-4 pb-2">Spring 2023</h3>
+          <ul className="course-list space-y-2 text-sm">
             <li>• EC202 Intermed Macro</li>
             <li>• EC204 Empirical Economics II</li>
-            <li className="font-black">• CS112 Intro to CS II</li>
+            <li className="font-medium">• CS112 Intro to CS II</li>
             <li>• CG101 Modern Greek</li>
           </ul>
         </div>
-        <div className="border-4 border-black p-5 bg-white hover:bg-black hover:text-white" style={{ transition: 'none' }}>
-          <h3 className="text-xl font-black mb-4 uppercase border-b-2 border-current pb-2">Fall 2022</h3>
-          <ul className="space-y-2 font-mono text-sm">
+        <div className="course-card p-5">
+          <h3 className="course-title text-[24px] mb-4 pb-2">Fall 2022</h3>
+          <ul className="course-list space-y-2 text-sm">
             <li>• EC201 Intermed Micro</li>
             <li>• EC203 Empirical Economics I</li>
-            <li className="font-black">• CS111 Intro to CS I</li>
+            <li className="font-medium">• CS111 Intro to CS I</li>
             <li>• WR120 Writing Seminar</li>
           </ul>
         </div>
       </div>
-      <div className="mt-16 text-center border-4 border-black p-4 bg-black text-white">
-        <p className="font-mono text-sm uppercase tracking-wider">© {new Date().getFullYear()} Hong Yuan Cao</p>
+      <div className="mt-16 text-center">
+        <p className="metadata text-xs">© {new Date().getFullYear()} Hong Yuan Cao</p>
       </div>
     </div>
   );
@@ -352,8 +293,6 @@ const CubePortfolio = () => {
     }
 
     setTimeout(() => setIsLoading(false), 600);
-    document.body.classList.add('font-poppins');
-
     return () => {
       window.removeEventListener('resize', checkMobile);
       // Reset body styles on cleanup
@@ -435,7 +374,7 @@ const CubePortfolio = () => {
     touchStartTime.current = Date.now();
   };
 
-  const handleTouchMove = (e) => {
+  const handleTouchMove = () => {
     if (!useLinearLayout) return;
     // Allow normal scrolling within sections
   };
@@ -493,92 +432,61 @@ const CubePortfolio = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-white">
-        <div className="border-4 border-black p-8 shadow-brutalist-lg">
-          <div className="text-4xl font-black uppercase tracking-wider">Loading...</div>
-        </div>
+      <div className="portfolio-shell flex items-center justify-center h-screen">
+        <div className="section-title text-[42px]">Loading...</div>
       </div>
     );
   }
 
-  // Linear scroll layout used for mobile and Safari desktop fallback
+  // Tab bar layout used for mobile and Safari desktop fallback
   if (useLinearLayout) {
+    const tabs = [
+      { label: 'Home',     icon: Home,     id: 0 },
+      { label: 'Resume',   icon: FileText,  id: 1 },
+      { label: 'Projects', icon: Code2,     id: 2 },
+      { label: 'Courses',  icon: BookOpen,  id: 3 },
+    ];
+
     return (
-      <div className="min-h-screen bg-white font-tech" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-        {/* Mobile Navigation - Minimal Brutalist */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b-4 border-black">
-          <div className="flex justify-end items-center px-4 py-3">
-             <button
-              onClick={() => setMobileMenuOpen(true)}
-              className="font-black text-lg uppercase tracking-wider"
-              aria-label="Open menu"
-            >
-              MENU
-            </button>
-          </div>
-
-          {/* Full Screen Overlay Menu */}
-          {mobileMenuOpen && (
-            <div className="fixed inset-0 bg-white z-50 flex flex-col">
-              {/* Header */}
-              <div className="flex justify-end items-center px-4 py-3 border-b-4 border-black">
-                <button
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="font-black text-lg uppercase tracking-wider"
-                  aria-label="Close menu"
-                >
-                  CLOSE ×
-                </button>
-              </div>
-
-              {/* Menu Links */}
-              <div className="flex-grow flex flex-col justify-center px-6 space-y-6">
-                {sections.map((section) => (
-                  <a
-                    key={section}
-                    href={`#${section.toLowerCase()}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-4xl font-black uppercase tracking-tight hover:text-gray-500 transition-colors"
-                  >
-                    {section}
-                  </a>
-                ))}
-              </div>
-              
-              {/* Footer info in menu */}
-              <div className="p-6 border-t-4 border-black">
-                 <p className="font-mono text-sm">© {new Date().getFullYear()} Hong Yuan Cao</p>
-              </div>
+      <div className="portfolio-shell flex flex-col" style={{ height: '100dvh' }}>
+        {/* Active section — scrollable area above the tab bar */}
+        <div key={currentSection} className="section-fade-in flex-1 overflow-y-auto overscroll-contain">
+          {currentSection === 0 && (
+            <div className={`${isMobile ? 'min-h-full px-6 py-12' : 'min-h-full px-10 py-16'} flex items-center justify-center`}>
+              {renderHomeContent(false, !isMobile)}
             </div>
           )}
-        </nav>
-
-        {/* Mobile Content - All sections in a single scrollable container */}
-        <div className="pt-16">
-          <section id="home" className="min-h-screen flex items-center justify-center">
-            <div className="px-4">
-              {renderHomeContent(false)}
-            </div>
-          </section>
-
-          <section id="resume" className="min-h-screen py-8">
-            <div className="max-w-3xl mx-auto px-4">
+          {currentSection === 1 && (
+            <div className="px-4 py-8">
               <ResumeViewer />
             </div>
-          </section>
-
-          <section id="projects" className="min-h-screen py-8">
-            <div className="px-4">
-              {renderProjectsContent()}
+          )}
+          {currentSection === 2 && (
+            <div className="px-4 pb-6">
+              {renderProjectsContent(true)}
             </div>
-          </section>
-
-          <section id="coursework" className="min-h-screen py-8">
-            <div className="px-4">
-              {renderCourseworkContent()}
+          )}
+          {currentSection === 3 && (
+            <div className="px-4 pb-6">
+              {renderCourseworkContent(true)}
             </div>
-          </section>
+          )}
         </div>
+
+        {/* Bottom tab bar */}
+        <nav className="mobile-tab-bar">
+          {tabs.map((tab) => (
+            <button
+              key={tab.label}
+              onClick={() => setCurrentSection(tab.id)}
+              className={`mobile-tab ${currentSection === tab.id ? 'mobile-tab-active' : ''}`}
+              aria-label={tab.label}
+            >
+              <tab.icon size={20} strokeWidth={1.8} />
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </nav>
       </div>
     );
   }
@@ -587,9 +495,8 @@ const CubePortfolio = () => {
   return (
       <div
         ref={containerRef}
-        className="h-screen overflow-hidden bg-white font-tech"
+        className="portfolio-shell h-screen overflow-hidden"
         style={{
-          fontFamily: "'JetBrains Mono', monospace",
           WebkitOverflowScrolling: 'touch',
           touchAction: 'pan-y'
         }}
@@ -598,30 +505,31 @@ const CubePortfolio = () => {
         onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Minimal Brutalist Navigation - Expandable on Hover */}
+      {/* Minimal Navigation - Expandable on Hover */}
       <nav className="fixed top-8 left-8 z-50 group">
         {/* Current Page Indicator - Always Visible */}
-        <div className="border-4 border-black bg-black text-white px-6 py-3 font-black text-lg uppercase tracking-wider shadow-brutalist cursor-default">
-          {sections[currentSection]}
+        <div className="nav-current px-3 py-1.5 cursor-default">
+          <span className="metadata mr-3 text-[11px]">{String(currentSection + 1).padStart(2, '0')}</span>
+          <span>{sections[currentSection]}</span>
         </div>
 
         {/* Expanded Navigation - Shows on Hover */}
         <div className="hidden group-hover:block absolute top-full left-0 pt-2 w-max">
-          <div className="border-4 border-black bg-white shadow-brutalist-lg">
+          <div className="nav-menu">
             {sections.map((section, index) => (
               <button
                 key={section}
                 onClick={() => goToSection(index)}
-                className={`block w-full text-left px-6 py-3 font-black uppercase tracking-wider border-b-2 border-black last:border-b-0 ${
+                className={`nav-menu-item block w-full text-left px-4 py-2.5 ${
                   currentSection === index
-                    ? 'bg-black text-white'
-                    : 'bg-white text-black hover:bg-black hover:text-white'
+                    ? 'nav-menu-item-active'
+                    : ''
                 }`}
-                style={{ transition: 'none', minWidth: '200px' }}
+                style={{ minWidth: '180px' }}
               >
                 <div className="flex justify-between items-center w-full">
                   <span>{section}</span>
-                  {currentSection === index && <span>&lt;</span>}
+                  {currentSection === index && <span>•</span>}
                 </div>
               </button>
             ))}
@@ -632,8 +540,8 @@ const CubePortfolio = () => {
       {/* Simplified Decorative Elements */}
       <div className="fixed inset-0 pointer-events-none z-10 hidden md:block">
         {/* Status Text - Simple & Clean */}
-        <div className="absolute bottom-8 right-8 font-mono text-xs font-bold text-black opacity-50">
-           {currentSection + 1} / {sections.length} - {sections[currentSection]}
+        <div className="metadata absolute bottom-8 right-8 text-xs opacity-70">
+           {currentSection + 1} / {sections.length} · {sections[currentSection]}
         </div>
       </div>
 
@@ -655,14 +563,11 @@ const CubePortfolio = () => {
         >
           {sections.map((section, index) => {
             const isActive = currentSection === index;
-            const isPrevSectionAvailable = index > 0;
-            const isNextSectionAvailable = index < sections.length - 1;
-
             return (
               <div
                 key={section}
                 ref={(el) => (sectionRefs.current[index] = el)}
-                className="absolute inset-0 bg-white"
+                className="portfolio-panel absolute inset-0"
                 style={{
                   transform: `rotateX(${-index * 90}deg) translateZ(50vh)`,
                   transformStyle: 'preserve-3d',
@@ -684,9 +589,16 @@ const CubePortfolio = () => {
                   }}
                 >
                   {/* Content containers */}
-                  <div className={`p-4 md:p-8 lg:p-16 max-w-4xl mx-auto ${section === 'HOME' ? 'h-full flex flex-col justify-center' : ''}`}>
+                  <div className={`p-6 md:p-10 lg:p-16 mx-auto ${section === 'HOME' ? 'h-full flex flex-col justify-center relative' : ''}`}>
                     {/* HOME Section */}
-                    {section === 'HOME' && renderHomeContent(true)}
+                    {section === 'HOME' && (
+                      <>
+                        {renderHomeContent(true)}
+                        <div className="absolute bottom-8 left-0 right-0 flex justify-center animate-bounce" style={{ color: 'var(--text-muted)' }}>
+                          <ChevronDown size={28} strokeWidth={1.8} />
+                        </div>
+                      </>
+                    )}
 
                     {section === 'RESUME' && (
                       <div className="w-full h-full flex flex-col">
