@@ -33,20 +33,20 @@
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-    --bg-primary: #17130f;
-    --bg-secondary: #201a15;
-    --bg-elevated: #26211b;
-    --bg-wash: #31271f;
-    --text-primary: #f2eadf;
-    --text-secondary: #d8c9b9;
-    --text-muted: #bba996;
-    --accent: #d2a06d;
-    --accent-strong: #e5bc87;
-    --accent-soft: #3b2d22;
-    --accent-ember: #d47a54;
-    --accent-ember-soft: #573326;
-    --line: #3b3129;
-    --line-strong: #665344;
+    --bg-primary: oklch(15.5% 0.012 205);
+    --bg-secondary: oklch(19% 0.014 205);
+    --bg-elevated: oklch(23% 0.016 205);
+    --bg-wash: oklch(27% 0.018 205);
+    --text-primary: oklch(93% 0.012 210);
+    --text-secondary: oklch(78% 0.018 210);
+    --text-muted: oklch(64% 0.018 210);
+    --accent: oklch(76% 0.088 195);
+    --accent-strong: oklch(84% 0.075 190);
+    --accent-soft: oklch(28% 0.045 195);
+    --accent-ember: oklch(72% 0.08 165);
+    --accent-ember-soft: oklch(26% 0.04 165);
+    --line: oklch(29% 0.014 205);
+    --line-strong: oklch(41% 0.018 205);
     --shadow: 0 18px 18px rgba(0, 0, 0, 0.34);
     --shadow-soft: 0 10px 16px rgba(0, 0, 0, 0.28);
   }
@@ -714,7 +714,7 @@ img {
   border-radius: var(--radius);
   background: var(--bg-elevated);
   box-shadow: var(--shadow);
-  transform: rotate(0.35deg);
+  transform: none;
   transition:
     border-color 220ms ease,
     box-shadow 220ms ease,
@@ -724,7 +724,7 @@ img {
 .resume-preview:hover {
   border-color: color-mix(in srgb, var(--accent-ember) 42%, var(--line-strong));
   box-shadow: var(--shadow-soft);
-  transform: rotate(0deg) translateY(-3px);
+  transform: translateY(-3px);
 }
 
 .resume-preview img {
