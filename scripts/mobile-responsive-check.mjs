@@ -2,17 +2,20 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const component = readFileSync(resolve(root, 'src/components/Portfolio.jsx'), 'utf8');
 const css = readFileSync(resolve(root, 'src/index.css'), 'utf8');
-
 const failures = [];
 
 function assert(condition, message) {
   if (!condition) failures.push(message);
 }
 
-function mediaBlock(maxWidth) {
-  const start = css.indexOf(`@media (max-width: ${maxWidth}px)`);
+function getVar(name) {
+  const match = css.match(new RegExp(`${name}:\\s*([^;]+);`));
+  return match?.[1].trim();
+}
+
+function mediaBlock(query) {
+  const start = css.indexOf(query);
   if (start === -1) return '';
 
   let depth = 0;
@@ -27,39 +30,74 @@ function mediaBlock(maxWidth) {
   return '';
 }
 
-const mobile = mediaBlock(640);
-const smallMobile = mediaBlock(380);
-
-function hasRule(block, selector, declaration) {
-  const selectorIndex = block.indexOf(selector);
-  if (selectorIndex === -1) return false;
-  const ruleEnd = block.indexOf('}', selectorIndex);
-  return ruleEnd !== -1 && block.slice(selectorIndex, ruleEnd).includes(declaration);
+function ruleBlock(source, selector) {
+  const start = source.indexOf(`${selector} {`);
+  if (start === -1) return '';
+  const end = source.indexOf('}', start);
+  return end === -1 ? '' : source.slice(start, end + 1);
 }
 
-assert(component.includes('className={item.href === \'#home\' ? \'nav-home\' : undefined}'), 'Mobile nav should treat the wordmark as Home and remove duplicate Home from the nav row.');
-assert(component.includes('project.signal') && component.includes('project-signal'), 'Selected work needs a short mobile-readable signal line.');
-assert(component.includes('archive-arrow'), 'Archive rows need a persistent touch-visible external-link affordance.');
-assert(component.includes('archive-intro'), 'Project archive should include a styled brief description paragraph.');
-assert(css.includes('.archive-intro'), 'Project archive description should have dedicated styling.');
-assert(component.includes('&copy; 2026 Hong Yuan Cao'), 'Portfolio should include the quiet copyright footer.');
-assert(css.includes('.site-footer'), 'Copyright footer should have dedicated styling.');
-assert(css.includes('@media (prefers-color-scheme: dark)') && css.includes('color-scheme: dark'), 'Portfolio should honor system dark mode without changing the light default.');
-assert(component.includes('Download resume'), 'Resume download action should name the object being downloaded.');
-assert(hasRule(mobile, '.site-header', 'position: sticky'), 'Mobile header should remain sticky for fast section access.');
-assert(hasRule(mobile, '.site-nav', 'justify-content: flex-start'), 'Mobile nav should avoid flex-end clipping when it overflows.');
-assert(hasRule(mobile, '.nav-home', 'display: none'), 'Mobile nav should hide the duplicate Home item.');
-assert(mobile.includes('.project-signal') && mobile.includes('display: block'), 'Project signal line should appear on mobile.');
-assert(!mobile.includes('max-height: min(58vh, 300px)'), 'Mobile should keep the full resume preview visible instead of cropping it.');
-assert(!mobile.includes('transform: translateY(-2%)'), 'Mobile resume image should not be shifted upward or visually cut.');
-assert(hasRule(mobile, '.background-section', 'padding: 46px 0 50px'), 'Mobile background section should be condensed compared with standard sections.');
-assert(hasRule(mobile, '.background-section .section-heading', 'margin-bottom: 0'), 'Mobile background heading should sit closer to the course grid.');
-assert(hasRule(mobile, '.background-section .course-group', 'grid-template-columns'), 'Mobile course groups should use a compact two-column row structure.');
-assert(hasRule(mobile, '.background-section .course-group', 'padding: 16px 0'), 'Mobile course groups should use tighter row padding.');
-assert(mobile.includes('@media (hover: none)') && mobile.includes('.archive-arrow'), 'Touch devices should get affordances that do not depend on hover.');
-assert(hasRule(smallMobile, '.site-header', 'flex-direction: column'), 'Very small phones should switch to a two-line sticky header rather than clipped nav.');
-assert(hasRule(smallMobile, '.site-nav', 'width: 100%'), 'Very small phone nav should expose all section links across the full content width.');
-assert(hasRule(smallMobile, '.site-nav a', 'min-height: 44px'), 'Very small phones should keep nav tap targets usable.');
+function hexToRgb(hex) {
+  const value = hex.replace('#', '');
+  return [0, 2, 4].map((offset) => parseInt(value.slice(offset, offset + 2), 16) / 255);
+}
+
+function channelToLinear(channel) {
+  return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+}
+
+function luminance(hex) {
+  const [r, g, b] = hexToRgb(hex).map(channelToLinear);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contrast(a, b) {
+  const [lighter, darker] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+const canvas = getVar('--canvas');
+const text = getVar('--text');
+const muted = getVar('--muted');
+const focus = getVar('--focus');
+const measure = getVar('--measure');
+const body = ruleBlock(css, 'body');
+const introHeading = ruleBlock(css, '.intro h1');
+const portfolioMain = ruleBlock(css, '.portfolio-main');
+const mobile = mediaBlock('@media (max-width: 640px)');
+const reducedMotion = mediaBlock('@media (prefers-reduced-motion: reduce)');
+
+assert(canvas === '#f7f6f2', '--canvas should use the approved warm off-white.');
+assert(text && canvas && contrast(text, canvas) >= 7, '--text should meet enhanced contrast on --canvas.');
+assert(muted && canvas && contrast(muted, canvas) >= 4.5, '--muted should meet AA contrast on --canvas.');
+assert(focus && canvas && contrast(focus, canvas) >= 4.5, '--focus should meet AA contrast on --canvas.');
+assert(measure === 'min(640px, calc(100% - 64px))', '--measure should cap the desktop reading column at 640px with 32px side padding.');
+assert(css.includes('color-scheme: light'), 'Portfolio should advertise the intentional light-only color scheme.');
+assert(!css.includes('@media (prefers-color-scheme: dark)'), 'Portfolio should not add an automatic dark theme.');
+assert(body.includes('font-size: 16px') && body.includes('line-height: 1.75'), 'Body should use 16px text with a 28px line height.');
+assert(introHeading.includes('font-size: 18px'), 'Intro heading should remain a small 18px heading.');
+assert(portfolioMain.includes('padding: 128px 0 96px'), 'Desktop composition should begin with 128px top spacing.');
+assert(css.includes('max-width: 36rem'), 'Introductory copy should retain a comfortable short measure.');
+assert(css.includes('animation: enter 500ms'), 'Major blocks should use the approved 500ms initial entry.');
+assert(reducedMotion.includes('animation: none'), 'Reduced-motion users should receive no entry animation.');
+assert(reducedMotion.includes('scroll-behavior: auto'), 'Reduced-motion users should not receive smooth scrolling.');
+
+for (const banned of [
+  'linear-gradient',
+  'radial-gradient',
+  'box-shadow',
+  'backdrop-filter',
+  'position: sticky',
+  'text-transform: uppercase',
+  '.card',
+]) {
+  assert(!css.includes(banned), `Banned visual treatment should be absent: ${banned}`);
+}
+
+assert(mobile.includes('--measure: calc(100% - 48px)'), 'Mobile should use 24px side margins.');
+assert(mobile.includes('padding: 64px 0 72px'), 'Mobile composition should begin with 64px top spacing.');
+assert(mobile.includes('margin-top: 52px'), 'Mobile sections should use the approved compact section rhythm.');
+assert(!mobile.includes('font-size: 15px'), 'Mobile should not shrink body text below 16px.');
 
 if (failures.length) {
   console.error(failures.map((failure) => `- ${failure}`).join('\n'));
