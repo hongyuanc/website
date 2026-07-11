@@ -23,7 +23,7 @@ const PROJECTS = [
 ];
 
 const ELSEWHERE_LINKS = [
-  { label: 'résumé', href: '/resume.pdf', external: true },
+  { label: 'resume', href: '/resume.pdf', external: true },
   { label: 'github', href: 'https://github.com/hongyuanc', external: true },
   { label: 'linkedin', href: 'https://www.linkedin.com/in/hong-yuan-cao/', external: true },
   { label: 'email', href: 'mailto:hc2343@cornell.edu', external: false },
@@ -44,7 +44,9 @@ function Intro() {
       <h1 id="intro-title">hi, i’m hong.</h1>
       <p>i’m a software engineer working across systems, ml tooling, and game infrastructure.</p>
       <p className="intro-context">
-        i recently finished computer science and economics at bu, and i’m heading to cornell tech for an meng in computer science.
+        i recently finished computer science and economics at{' '}
+        <ExternalLink href="https://www.bu.edu/">bu</ExternalLink>, and i’m heading to{' '}
+        <ExternalLink href="https://tech.cornell.edu/">cornell tech</ExternalLink> for an meng in computer science.
       </p>
     </section>
   );
@@ -68,7 +70,7 @@ function ProjectLink({ project }) {
 function Projects() {
   return (
     <section className="projects-section" aria-labelledby="projects-title">
-      <h2 id="projects-title">selected projects</h2>
+      <h2 id="projects-title">some projects</h2>
       <ul className="project-list">
         {PROJECTS.map((project) => (
           <ProjectLink key={project.title} project={project} />
