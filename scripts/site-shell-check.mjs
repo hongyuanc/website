@@ -19,6 +19,9 @@ assert(html.includes('<link rel="canonical" href="https://hongyuancao.com/" />')
 assert(html.includes('<meta property="og:title" content="Hong Yuan Cao" />'), 'Open Graph title should match the document title.');
 assert(html.includes('<meta name="twitter:title" content="Hong Yuan Cao" />'), 'Twitter title should match the document title.');
 assert(html.includes('<meta name="theme-color" content="#f7f6f2" />'), 'Browser theme color should match the light canvas.');
+assert(html.includes('href="/favicon-light.png?v=4"'), 'Light favicon should use the v=4 cache key.');
+assert(html.includes('href="/favicon-dark.png?v=4"'), 'Dark favicon should use the v=4 cache key.');
+assert(html.includes('href="/favicon.ico?v=4"'), 'Fallback favicon should use the v=4 cache key.');
 assert(!html.includes('academic background'), 'Metadata should not advertise removed academic background content.');
 assert(!('lucide-react' in dependencies), 'lucide-react should be removed from runtime dependencies.');
 assert(!('lodash.throttle' in dependencies), 'lodash.throttle should be removed from runtime dependencies.');
