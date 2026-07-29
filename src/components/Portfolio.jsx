@@ -13,7 +13,7 @@ const PROJECTS = [
   {
     title: 'work-stealing task runtime',
     description: 'a c++ scheduler for exploring locality, contention, and irregular task graphs.',
-    href: 'https://github.com/hongyuanc?tab=repositories',
+    href: 'https://github.com/hongyuanc/task-runtime',
   },
   {
     title: 'vectordb',
